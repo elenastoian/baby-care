@@ -34,6 +34,5 @@ public class Parent {
     private AppUser appUser;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
-    @JsonIgnore
     private List<Baby> babies = new ArrayList<>();
 }

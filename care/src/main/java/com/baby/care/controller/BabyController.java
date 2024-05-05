@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(path = "/v1/baby")
 @AllArgsConstructor
-@NoArgsConstructor
 public class BabyController {
     private BabyService babyService;
 

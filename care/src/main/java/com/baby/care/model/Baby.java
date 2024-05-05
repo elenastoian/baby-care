@@ -30,6 +30,8 @@ public class Baby {
     @NonNull
     private LocalDate dateOfBirth;
 
+    // age is not persisted in the database;
+    // when is needed it will be accessed through its GETTER
     @Transient
     private String age;
 
@@ -54,25 +56,25 @@ public class Baby {
     @NonNull
     private Parent parent;
 
-    public void setDateOfBirth(LocalDate dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-        calculateFormattedAge();
+    @Transient
+    public String getAge() {
+        return calculateFormattedAge();
     }
 
-    private void calculateFormattedAge() {
+    private String calculateFormattedAge() {
         try {
             LocalDate currentDate = LocalDate.now();
             Period period = Period.between(dateOfBirth, currentDate);
             int years = period.getYears();
             int months = period.getMonths();
             int days = period.getDays();
-            age = years + "y " + months + "m " + days + "d";
+            return years + "y " + months + "m " + days + "d";
 
         } catch (NullPointerException e) {
             Logger LOGGER = LoggerFactory.getLogger(Baby.class);
             LOGGER.info("Baby age could not be calculated due to NullPointerException.");
 
-            age = "";
+            return "";
         }
     }
 }
