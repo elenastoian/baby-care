@@ -29,7 +29,7 @@ public class SecurityConfig {
     @Value("${allowed.origin.www}")
     private String allowedOriginWithWWW;
 
-    private static final String[] WHITE_LIST = {"/auth/**", "/swagger-ui/**", "/api-docs"};
+    private static final String[] WHITE_LIST = {"/auth/**", "/swagger-ui/**", "/v3/api-docs/**"};
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
