@@ -15,10 +15,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -41,7 +42,7 @@ class ParentServiceTest {
 
         Parent parent = Parent.builder()
                 .name("Name")
-                .age(30)
+                .dateOfBirth(LocalDate.of(2023, Month.OCTOBER, 12))
                 .sex(Sex.FEMALE)
                 .location("Romania")
                 .appUser(appUser)
@@ -51,7 +52,7 @@ class ParentServiceTest {
         when(parentRepository.save(any(Parent.class))).thenReturn(parent);
         when(appUserRepository.save(any(AppUser.class))).thenReturn(appUser);
 
-        SaveParentRequest request = new SaveParentRequest("Name", 30, Sex.FEMALE, "Romania");
+        SaveParentRequest request = new SaveParentRequest("Name", LocalDate.of(2023, Month.OCTOBER, 12), Sex.FEMALE, "Romania");
         parentService.saveParent(request, "token");
 
         verify(appUserService, times(1)).findCurrentAppUser(anyString());
@@ -61,14 +62,14 @@ class ParentServiceTest {
         assertEquals("Name", parent.getName());
         assertEquals(appUser.getUsername(), parent.getAppUser().getUsername());
         assertEquals(parent.getName(), appUser.getParent().getName());
-
+        assertNotNull(appUser.getParent().getAge());
     }
 
     @Test
     void testParentNotSaved_UserNotFound() {
         when(appUserService.findCurrentAppUser(anyString())).thenReturn(new AppUser());
 
-        SaveParentRequest request = new SaveParentRequest("Name", 30, Sex.FEMALE, "Romania");
+        SaveParentRequest request = new SaveParentRequest("Name", LocalDate.of(2023, Month.OCTOBER, 12), Sex.FEMALE, "Romania");
 
         assertThrows(AppUserNotFoundException.class, () -> parentService.saveParent(request, "token"));
 
@@ -80,7 +81,7 @@ class ParentServiceTest {
 
         when(appUserService.findCurrentAppUser(anyString())).thenReturn(appUser);
 
-        SaveParentRequest request = new SaveParentRequest("Name", 30, Sex.FEMALE, "Romania");
+        SaveParentRequest request = new SaveParentRequest("Name", LocalDate.of(2023, Month.OCTOBER, 12), Sex.FEMALE, "Romania");
 
         assertThrows(FailedToSaveParentException.class, () -> parentService.saveParent(request, "token"));
 
@@ -101,7 +102,7 @@ class ParentServiceTest {
         when(appUserService.findCurrentAppUser(anyString())).thenReturn(appUser);
         when(parentRepository.save(any(Parent.class))).thenReturn(null);
 
-        SaveParentRequest request = new SaveParentRequest("Name", 30, Sex.FEMALE, "Romania");
+        SaveParentRequest request = new SaveParentRequest("Name", LocalDate.of(2023, Month.OCTOBER, 12), Sex.FEMALE, "Romania");
 
         assertThrows(FailedToSaveParentException.class, () -> parentService.saveParent(request, "token"));
     }

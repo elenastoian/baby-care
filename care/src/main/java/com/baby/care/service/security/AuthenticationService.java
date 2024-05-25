@@ -136,6 +136,8 @@ public class AuthenticationService {
         saveUserToken(appUser, jwtToken);
 
         return ResponseEntity.status(HttpStatus.OK).body(AuthenticationResponse.builder()
+                        .id(appUser.getId())
+                        .email(appUser.getEmail())
                 .token(jwtToken)
                 .build());
     }

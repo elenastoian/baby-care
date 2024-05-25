@@ -1,10 +1,7 @@
-package com.baby.care.controller.request;
+package com.baby.care.controller.repsonse;
 
 import com.baby.care.model.enums.Sex;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -12,9 +9,12 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Getter
 @Setter
-public class SaveParentRequest {
+@Builder
+public class GetParentResponse {
+    private Long id;
     private String name;
     private LocalDate dateOfBirth;
+    private int age;
     private Sex sex;
     private String location;
 }
