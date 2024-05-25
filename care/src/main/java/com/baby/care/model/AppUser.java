@@ -44,7 +44,7 @@ public class AppUser implements UserDetails {
     @JoinColumn(name = "fk_parent_id", referencedColumnName = "id")
     private Parent parent;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonIgnore
     private List<Token> tokens = new ArrayList<>();
 

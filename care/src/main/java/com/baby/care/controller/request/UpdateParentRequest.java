@@ -1,18 +1,16 @@
 package com.baby.care.controller.request;
 
 import com.baby.care.model.enums.Sex;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
-public class SaveParentRequest {
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class UpdateParentRequest {
     private String name;
     private LocalDate dateOfBirth;
     private Sex sex;

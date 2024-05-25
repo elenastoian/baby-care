@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(path = "/v1/baby")
+@RequestMapping(path = "/baby")
 @AllArgsConstructor
 public class BabyController {
     private BabyService babyService;
