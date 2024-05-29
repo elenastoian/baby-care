@@ -1,5 +1,6 @@
 package com.baby.care.service;
 
+import com.baby.care.controller.repsonse.GetAllBabiesResponse;
 import com.baby.care.controller.repsonse.SaveBabyResponse;
 import com.baby.care.controller.request.SaveBabyRequest;
 import com.baby.care.errors.AppUserNotFoundException;
@@ -15,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -88,5 +90,40 @@ public class BabyService {
             LOGGER.error(Arrays.toString(e.getStackTrace()));
             throw new FailedToSaveBabyException();
         }
+    }
+
+    public List<GetAllBabiesResponse> getAllBabies(String token) {
+        AppUser appUser = appUserService.findCurrentAppUser(token);
+
+        if (appUser == null || appUser.getId() == null) {
+            LOGGER.error("AppUser could not be found. The Baby was not saved.");
+            throw new AppUserNotFoundException();
+        }
+
+        if (appUser.getParent() == null) {
+            LOGGER.error("No Parent exist for this user. Baby could not be added.");
+            throw new FailedToSaveBabyException();
+        }
+
+        List<GetAllBabiesResponse> responseList = new ArrayList<>();
+
+        for(Baby baby : appUser.getParent().getBabies()) {
+            GetAllBabiesResponse response = GetAllBabiesResponse.builder()
+                    .id(baby.getId())
+                    .name(baby.getName())
+                    .dateOfBirth(baby.getDateOfBirth())
+                    .age(baby.getAge())
+                    .sex(baby.getSex())
+                    .weight(baby.getWeight())
+                    .height(baby.getHeight())
+                    .typeOfBirth(baby.getTypeOfBirth())
+                    .birthWeight(baby.getBirthWeight())
+                    .comments(baby.getComments())
+                    .build();
+
+            responseList.add(response);
+        }
+
+        return responseList;
     }
 }
