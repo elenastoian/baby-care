@@ -100,6 +100,7 @@ public class ParentService {
         }
     }
 
+    @Transactional
     public SaveParentResponse updateParent(UpdateParentRequest updateParentRequest, String token) {
         AppUser appUser = isUserAndParentPresent(token);
         Parent parent = appUser.getParent();

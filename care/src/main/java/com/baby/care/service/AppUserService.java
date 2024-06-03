@@ -1,11 +1,14 @@
 package com.baby.care.service;
 
+import com.baby.care.controller.repsonse.SaveUserResponse;
+import com.baby.care.controller.request.UpdateUserRequest;
 import com.baby.care.model.AppUser;
 import com.baby.care.repository.AppUserRepository;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +19,7 @@ import java.util.Optional;
 public class AppUserService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AppUserService.class);
     private AppUserRepository appUserRepository;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * Finds the AppUser that has the given token assigned
@@ -40,5 +44,33 @@ public class AppUserService {
             LOGGER.error(e.getMessage());
             return new AppUser();
         }
+    }
+
+    /**
+     * Update user info
+     *
+     * @param updateUserRequest contains email and password
+     * @param token
+     * @return
+     */
+    @Transactional
+    public SaveUserResponse updateAppUser(UpdateUserRequest updateUserRequest, String token) {
+        AppUser appUser = this.findCurrentAppUser(token);
+
+        if (appUser == null) {
+            throw new RuntimeException("User not found.");
+        }
+
+        if (updateUserRequest.getEmail() != null) {
+            appUser.setEmail(updateUserRequest.getEmail());
+        }
+
+        if (updateUserRequest.getPassword() != null) {
+            appUser.setPassword(passwordEncoder.encode(updateUserRequest.getPassword()));
+        }
+
+        appUserRepository.save(appUser);
+
+        return new SaveUserResponse(appUser.getEmail());
     }
 }
