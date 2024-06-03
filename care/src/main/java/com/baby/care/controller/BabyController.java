@@ -1,6 +1,6 @@
 package com.baby.care.controller;
 
-import com.baby.care.controller.repsonse.GetAllBabiesResponse;
+import com.baby.care.controller.repsonse.GetBabyResponse;
 import com.baby.care.controller.repsonse.SaveBabyResponse;
 import com.baby.care.controller.request.SaveBabyRequest;
 import com.baby.care.service.BabyService;
@@ -30,12 +30,22 @@ public class BabyController {
     }
 
     @GetMapping(path = "/all")
-    public ResponseEntity<List<GetAllBabiesResponse>> getAllBabies(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<List<GetBabyResponse>> getAllBabies(@RequestHeader("Authorization") String token) {
         try {
-            List<GetAllBabiesResponse> response = babyService.getAllBabies(token);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            List<GetBabyResponse> response = babyService.getAllBabies(token);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.emptyList());
+        }
+    }
+
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<GetBabyResponse> getBaby(@PathVariable Long id, @RequestHeader("Authorization") String token) {
+        try {
+            GetBabyResponse response = babyService.getBaby(id, token);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new GetBabyResponse());
         }
     }
 }

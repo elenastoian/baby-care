@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Builder
-public class GetAllBabiesResponse {
+public class GetBabyResponse {
 
     private Long id;
 
