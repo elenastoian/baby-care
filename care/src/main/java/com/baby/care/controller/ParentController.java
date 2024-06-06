@@ -4,6 +4,7 @@ import com.baby.care.controller.repsonse.GetParentResponse;
 import com.baby.care.controller.repsonse.SaveParentResponse;
 import com.baby.care.controller.request.SaveParentRequest;
 import com.baby.care.controller.request.UpdateParentRequest;
+import com.baby.care.errors.ParentNotFoundException;
 import com.baby.care.service.ParentService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +14,9 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path = "/parent")
+@AllArgsConstructor
 public class ParentController {
-    @Autowired
+
     private ParentService parentService;
 
     /**
@@ -38,13 +40,13 @@ public class ParentController {
     }
 
     @GetMapping()
-    public ResponseEntity<GetParentResponse> saveParent(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<GetParentResponse> getParent(@RequestHeader("Authorization") String token) {
         try {
             GetParentResponse response = parentService.getParent(token);
             return ResponseEntity.status(HttpStatus.OK).body(response);
 
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new GetParentResponse());
+        }  catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new GetParentResponse());
         }
     }
 

@@ -17,10 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -40,16 +37,16 @@ public class BabyService {
      */
     @Transactional
     public SaveBabyResponse saveBaby(SaveBabyRequest saveBabyRequest, String token) {
-        AppUser appUser = appUserService.findCurrentAppUser(token);
+        Optional<AppUser> appUser = appUserService.findCurrentAppUser(token);
 
-        if (appUser == null || appUser.getId() == null) {
-            LOGGER.error("AppUser could not be found. The Baby was not saved.");
-            throw new AppUserNotFoundException();
+        if (appUser.isEmpty()) {
+            LOGGER.warn("AppUser could not be found. The Baby was not saved.");
+            return new SaveBabyResponse();
         }
 
-        if (appUser.getParent() == null) {
-            LOGGER.error("No Parent exist for this user. Baby could not be added.");
-            throw new FailedToSaveBabyException();
+        if (appUser.get().getParent() == null) {
+            LOGGER.warn("No Parent exist for this user. Baby could not be added.");
+            return new SaveBabyResponse();
         }
 
         try {
@@ -62,14 +59,14 @@ public class BabyService {
                     .typeOfBirth(saveBabyRequest.getTypeOfBirth())
                     .birthWeight(saveBabyRequest.getBirthWeight())
                     .comments(saveBabyRequest.getComments())
-                    .parent(appUser.getParent())
+                    .parent(appUser.get().getParent())
                     .build();
 
             baby = babyRepository.save(baby);
 
             LOGGER.info("Baby was saved.");
 
-            Parent parent = appUser.getParent();
+            Parent parent = appUser.get().getParent();
             parent.getBabies().add(baby);
             parentRepository.save(parent);
 
@@ -90,26 +87,27 @@ public class BabyService {
 
         } catch (Exception e) {
             LOGGER.error(Arrays.toString(e.getStackTrace()));
-            throw new FailedToSaveBabyException();
+            LOGGER.warn("Error occurred while saving the Baby.");
+            return new SaveBabyResponse();
         }
     }
 
     public List<GetBabyResponse> getAllBabies(String token) {
-        AppUser appUser = appUserService.findCurrentAppUser(token);
+        Optional<AppUser> appUser = appUserService.findCurrentAppUser(token);
 
-        if (appUser == null || appUser.getId() == null) {
+        if (appUser.isEmpty()) {
             LOGGER.error("AppUser could not be found. The Baby was not saved.");
-            throw new AppUserNotFoundException();
+            return Collections.emptyList();
         }
 
-        if (appUser.getParent() == null) {
+        if (appUser.get().getParent() == null) {
             LOGGER.error("No Parent exist for this user. Baby could not be added.");
-            throw new FailedToSaveBabyException();
+            return Collections.emptyList();
         }
 
         List<GetBabyResponse> responseList = new ArrayList<>();
 
-        for(Baby baby : appUser.getParent().getBabies()) {
+        for(Baby baby : appUser.get().getParent().getBabies()) {
             GetBabyResponse response = GetBabyResponse.builder()
                     .id(baby.getId())
                     .name(baby.getName())
@@ -130,16 +128,16 @@ public class BabyService {
     }
 
     public GetBabyResponse getBaby(Long id, String token) {
-        AppUser appUser = appUserService.findCurrentAppUser(token);
+        Optional<AppUser> appUser = appUserService.findCurrentAppUser(token);
 
-        if (appUser == null || appUser.getId() == null) {
-            LOGGER.error("AppUser could not be found. The Baby was not saved.");
-            throw new AppUserNotFoundException();
+        if (appUser.isEmpty()) {
+            LOGGER.warn("AppUser could not be found. The Baby was not saved.");
+            return new GetBabyResponse();
         }
 
-        if (appUser.getParent() == null) {
-            LOGGER.error("No Parent exist for this user. Baby could not be added.");
-            throw new FailedToSaveBabyException();
+        if (appUser.get().getParent() == null) {
+            LOGGER.warn("No Parent exist for this user. Baby could not be added.");
+            return new GetBabyResponse();
         }
 
         Optional<Baby> baby = babyRepository.findById(id);
@@ -162,6 +160,6 @@ public class BabyService {
         }
 
         LOGGER.warn("Baby with id {} was not found.", id);
-        throw new BabyNotFoundException(id);
+        return new GetBabyResponse();
     }
 }

@@ -21,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -56,7 +57,7 @@ class BabyServiceTest {
                 .parent(parent)
                 .build();
 
-        when(appUserService.findCurrentAppUser(anyString())).thenReturn(appUser);
+        when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.of(appUser));
         when(babyRepository.save(any(Baby.class))).thenReturn(baby);
         when(parentRepository.save(any(Parent.class))).thenReturn(parent);
 
@@ -75,7 +76,7 @@ class BabyServiceTest {
     @Test
     void testBabyNotSaved_AppUserNotFound()
     {
-        when(appUserService.findCurrentAppUser(anyString())).thenReturn(new AppUser());
+        when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.empty());
 
         SaveBabyRequest request = new SaveBabyRequest("Rio", LocalDate.of(2021, Month.MARCH, 8),
                 Sex.MALE, 15.0, 50.3, TypeOfBirth.OTHER, 0.8, "N/A");
@@ -88,7 +89,7 @@ class BabyServiceTest {
     {
         AppUser appUser = new AppUser(1L, "user@gmail.com", "password", true, true, true, true, null, List.of(new Token()));
 
-        when(appUserService.findCurrentAppUser(anyString())).thenReturn(appUser);
+        when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.of(appUser));
 
         SaveBabyRequest request = new SaveBabyRequest("Rio", LocalDate.of(2021, Month.MARCH, 8),
                 Sex.MALE, 15.0, 50.3, TypeOfBirth.OTHER, 0.8, "N/A");

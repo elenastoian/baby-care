@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Service
@@ -28,21 +29,21 @@ public class AppUserService {
      * @return the AppUser that was found or a new empty AppUser if no user was found
      */
     @Transactional
-    public AppUser findCurrentAppUser(String token) {
+    public Optional<AppUser> findCurrentAppUser(String token) {
         try {
             token = token.substring(7);
             Optional<AppUser> appUserOptional = appUserRepository.findByTokensToken(token);
 
             if (appUserOptional.isPresent()) {
-                return appUserOptional.get();
+                return appUserOptional;
             }
 
             LOGGER.info("AppUser has not been found by the authentication token.");
-            return new AppUser();
+            return Optional.empty();
 
         } catch(Exception e) {
             LOGGER.error(e.getMessage());
-            return new AppUser();
+            return Optional.empty();
         }
     }
 
@@ -55,22 +56,22 @@ public class AppUserService {
      */
     @Transactional
     public SaveUserResponse updateAppUser(UpdateUserRequest updateUserRequest, String token) {
-        AppUser appUser = this.findCurrentAppUser(token);
+        Optional<AppUser> appUser = this.findCurrentAppUser(token);
 
-        if (appUser == null) {
-            throw new RuntimeException("User not found.");
+        if (appUser.isEmpty()) {
+           return new SaveUserResponse();
         }
 
         if (updateUserRequest.getEmail() != null) {
-            appUser.setEmail(updateUserRequest.getEmail());
+            appUser.get().setEmail(updateUserRequest.getEmail());
         }
 
         if (updateUserRequest.getPassword() != null) {
-            appUser.setPassword(passwordEncoder.encode(updateUserRequest.getPassword()));
+            appUser.get().setPassword(passwordEncoder.encode(updateUserRequest.getPassword()));
         }
 
-        appUserRepository.save(appUser);
+        appUserRepository.save(appUser.get());
 
-        return new SaveUserResponse(appUser.getEmail());
+        return new SaveUserResponse(appUser.get().getEmail());
     }
 }
