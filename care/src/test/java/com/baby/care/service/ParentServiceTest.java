@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -48,7 +49,7 @@ class ParentServiceTest {
                 .appUser(appUser)
                 .build();
 
-        when(appUserService.findCurrentAppUser(anyString())).thenReturn(appUser);
+        when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.of(appUser));
         when(parentRepository.save(any(Parent.class))).thenReturn(parent);
         when(appUserRepository.save(any(AppUser.class))).thenReturn(appUser);
 
@@ -67,7 +68,7 @@ class ParentServiceTest {
 
     @Test
     void testParentNotSaved_UserNotFound() {
-        when(appUserService.findCurrentAppUser(anyString())).thenReturn(new AppUser());
+        when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.empty());
 
         SaveParentRequest request = new SaveParentRequest("Name", LocalDate.of(2023, Month.OCTOBER, 12), Sex.FEMALE, "Romania");
 
@@ -79,7 +80,7 @@ class ParentServiceTest {
     void testParentNotSaved_ParentAlreadyExists() {
         AppUser appUser = new AppUser(1L, "user@gmail.com", "password", true, true, true, true, new Parent(), List.of(new Token()));
 
-        when(appUserService.findCurrentAppUser(anyString())).thenReturn(appUser);
+        when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.of(appUser));
 
         SaveParentRequest request = new SaveParentRequest("Name", LocalDate.of(2023, Month.OCTOBER, 12), Sex.FEMALE, "Romania");
 
@@ -99,7 +100,7 @@ class ParentServiceTest {
                 .appUser(appUser)
                 .build();
 
-        when(appUserService.findCurrentAppUser(anyString())).thenReturn(appUser);
+        when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.of(appUser));
         when(parentRepository.save(any(Parent.class))).thenReturn(null);
 
         SaveParentRequest request = new SaveParentRequest("Name", LocalDate.of(2023, Month.OCTOBER, 12), Sex.FEMALE, "Romania");

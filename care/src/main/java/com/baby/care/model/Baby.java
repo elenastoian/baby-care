@@ -2,7 +2,6 @@ package com.baby.care.model;
 
 import com.baby.care.model.enums.Sex;
 import com.baby.care.model.enums.TypeOfBirth;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.slf4j.Logger;
@@ -10,8 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -55,6 +52,10 @@ public class Baby {
     @JoinColumn(name = "fk_parent_id", nullable = false)
     @NonNull
     private Parent parent;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "fk_image_id", referencedColumnName = "id")
+    private Image image;
 
     @Transient
     public String getAge() {
