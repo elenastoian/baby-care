@@ -3,9 +3,6 @@ package com.baby.care.service;
 import com.baby.care.controller.repsonse.GetBabyResponse;
 import com.baby.care.controller.repsonse.SaveBabyResponse;
 import com.baby.care.controller.request.SaveBabyRequest;
-import com.baby.care.errors.AppUserNotFoundException;
-import com.baby.care.errors.BabyNotFoundException;
-import com.baby.care.errors.FailedToSaveBabyException;
 import com.baby.care.model.AppUser;
 import com.baby.care.model.Baby;
 import com.baby.care.model.Parent;
@@ -40,14 +37,16 @@ public class BabyService {
         Optional<AppUser> appUser = appUserService.findCurrentAppUser(token);
 
         if (appUser.isEmpty()) {
-            LOGGER.warn("AppUser could not be found. The Baby was not saved.");
+            LOGGER.info("AppUser could not be found. The Baby was not saved.");
             return new SaveBabyResponse();
         }
 
         if (appUser.get().getParent() == null) {
-            LOGGER.warn("No Parent exist for this user. Baby could not be added.");
+            LOGGER.info("No Parent exist for this user. Baby could not be added.");
             return new SaveBabyResponse();
         }
+
+        /* ============== */
 
         try {
             Baby baby = Baby.builder()
@@ -96,12 +95,12 @@ public class BabyService {
         Optional<AppUser> appUser = appUserService.findCurrentAppUser(token);
 
         if (appUser.isEmpty()) {
-            LOGGER.error("AppUser could not be found. The Baby was not saved.");
+            LOGGER.error("AppUser could not be found.");
             return Collections.emptyList();
         }
 
         if (appUser.get().getParent() == null) {
-            LOGGER.error("No Parent exist for this user. Baby could not be added.");
+            LOGGER.error("No Parent exist for this user.");
             return Collections.emptyList();
         }
 
@@ -161,5 +160,13 @@ public class BabyService {
 
         LOGGER.warn("Baby with id {} was not found.", id);
         return new GetBabyResponse();
+    }
+
+    protected Optional<Baby> findBabyById(Long babyId) {
+        return babyRepository.findById(babyId);
+    }
+
+    protected Baby saveBaby(Baby baby) {
+        return babyRepository.save(baby);
     }
 }

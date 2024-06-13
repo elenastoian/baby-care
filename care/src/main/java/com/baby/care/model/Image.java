@@ -3,16 +3,18 @@ package com.baby.care.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
-@Builder
 @Getter
 @Setter
-@AllArgsConstructor
+@Builder
+@EqualsAndHashCode
 @NoArgsConstructor
+@AllArgsConstructor
 public class Image {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
@@ -20,16 +22,11 @@ public class Image {
     private String type;
 
     @Lob
-    @Column(name = "bytes", columnDefinition = "bytea")
+    //@Column(name = "bytes")
     private byte[] data;
 
     @OneToOne(mappedBy = "image")
     private Baby baby;
 
-    public Image(String name, String type, byte[] data, Baby baby) {
-        this.name = name;
-        this.type = type;
-        this.data = data;
-        this.baby = baby;
-    }
+    private LocalDateTime timeAdded;
 }

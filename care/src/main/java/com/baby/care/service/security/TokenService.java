@@ -18,4 +18,8 @@ public class TokenService {
 
         return tokenRepository.findByTokenAndUser(token, appUser);
     }
+
+    public Optional<Token> getTokenByTokenValueAndAppUserId(AppUser appUser, String token) {
+        return tokenRepository.getTokenByTokenValueAndAppUserId(appUser, token);
+    }
 }

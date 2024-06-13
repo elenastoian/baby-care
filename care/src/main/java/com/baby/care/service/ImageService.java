@@ -1,50 +1,60 @@
 package com.baby.care.service;
 
-import com.baby.care.model.AppUser;
 import com.baby.care.model.Baby;
 import com.baby.care.model.Image;
-import com.baby.care.repository.BabyRepository;
 import com.baby.care.repository.ImageRepository;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class ImageService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageService.class);
 
-    private final ImageRepository imageRepository;
-    private final BabyRepository babyRepository;
-    private final AppUserService appUserService;
+    private ImageRepository imageRepository;
+    private final BabyService babyService;
 
-    public String uploadImage(Long babyId, MultipartFile imageFile, String token) throws IOException {
-        Optional<Baby> babyOptional = babyRepository.findById(babyId);
+    @Transactional
+    public ResponseEntity<Boolean> saveImage(Long babyId, MultipartFile file, String token) throws IOException {
 
-        if (babyOptional.isEmpty()) {
-            return " ";
-        }
+            Optional<Baby> babyOptional = babyService.findBabyById(babyId);
 
-        Optional<AppUser> appUser = appUserService.findCurrentAppUser(token);
+            if (babyOptional.isEmpty()) {
+                return ResponseEntity.ok().body(false);
+            }
 
-        if (appUser.isEmpty()) {
-            return " ";
-        }
+            Baby baby = babyOptional.get();
 
-        LOGGER.info("Image with name {} will be saved for baby with id {}", imageFile.getOriginalFilename(), babyId);
+            Image imageSaved = imageRepository.save(Image.builder()
+                    .name("baby-" + babyOptional.get().getId())
+                    .type(file.getContentType())
+                    .data(file.getInputStream().readAllBytes())
+                    .baby(baby)
+                    .timeAdded(LocalDateTime.now())
+                    .build());
 
-        imageRepository.save(Image.builder()
-                .name("baby" + babyOptional.get().getId())
-                .type(imageFile.getContentType())
-                .data(imageFile.getInputStream().readAllBytes())
-                .baby(babyOptional.get())
-                .build());
+            babyService.saveBaby(babyOptional.get());
 
-        return "file uploaded successfully : " + imageFile.getOriginalFilename();
+           if (imageSaved.getId() != null) {
+               baby.setImage(imageSaved);
+
+               babyService.saveBaby(babyOptional.get());
+
+               LOGGER.info("ImageService - saveImage - image was saved");
+
+               return ResponseEntity.ok().body(true);
+           }
+
+        return ResponseEntity.ok().body(false);
     }
 }

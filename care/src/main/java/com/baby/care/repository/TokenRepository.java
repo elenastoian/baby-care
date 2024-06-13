@@ -4,6 +4,7 @@ import com.baby.care.model.AppUser;
 import com.baby.care.model.Token;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -11,6 +12,9 @@ import java.util.Optional;
 
 @Repository
 public interface TokenRepository extends JpaRepository<Token, Long> {
+
+    @Query("SELECT t FROM Token t WHERE t.token = :token AND t.user = :user")
+    Optional<Token> getTokenByTokenValueAndAppUserId(@Param("user")AppUser user, @Param("token") String token);
 
     @Query(value = """
       SELECT t from Token t INNER JOIN AppUser u\s

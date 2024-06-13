@@ -43,6 +43,7 @@ public class AppUserService {
 
         } catch(Exception e) {
             LOGGER.error(e.getMessage());
+            LOGGER.error("ERROR: Could not find app user.");
             return Optional.empty();
         }
     }

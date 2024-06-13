@@ -48,14 +48,14 @@ public class Baby {
 
     private String comments;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "image_id", referencedColumnName = "id")
+    private Image image;
+
     @ManyToOne
     @JoinColumn(name = "fk_parent_id", nullable = false)
     @NonNull
     private Parent parent;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "fk_image_id", referencedColumnName = "id")
-    private Image image;
 
     @Transient
     public String getAge() {
