@@ -53,10 +53,6 @@ public class Baby {
     @NonNull
     private Parent parent;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "fk_image_id", referencedColumnName = "id")
-    private Image image;
-
     @Transient
     public String getAge() {
         return calculateFormattedAge();

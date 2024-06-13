@@ -3,6 +3,7 @@ package com.baby.care.service;
 import com.baby.care.controller.repsonse.GetBabyResponse;
 import com.baby.care.controller.repsonse.SaveBabyResponse;
 import com.baby.care.controller.request.SaveBabyRequest;
+import com.baby.care.controller.request.UpdateBabyRequest;
 import com.baby.care.errors.AppUserNotFoundException;
 import com.baby.care.errors.BabyNotFoundException;
 import com.baby.care.errors.FailedToSaveBabyException;
@@ -37,15 +38,10 @@ public class BabyService {
      */
     @Transactional
     public SaveBabyResponse saveBaby(SaveBabyRequest saveBabyRequest, String token) {
-        Optional<AppUser> appUser = appUserService.findCurrentAppUser(token);
+        Optional<AppUser> appUser = isUserAndBabyPresent(token);
 
         if (appUser.isEmpty()) {
-            LOGGER.warn("AppUser could not be found. The Baby was not saved.");
-            return new SaveBabyResponse();
-        }
-
-        if (appUser.get().getParent() == null) {
-            LOGGER.warn("No Parent exist for this user. Baby could not be added.");
+            LOGGER.warn("User with baby was not found.");
             return new SaveBabyResponse();
         }
 
@@ -93,15 +89,10 @@ public class BabyService {
     }
 
     public List<GetBabyResponse> getAllBabies(String token) {
-        Optional<AppUser> appUser = appUserService.findCurrentAppUser(token);
+        Optional<AppUser> appUser = isUserAndBabyPresent(token);
 
         if (appUser.isEmpty()) {
-            LOGGER.error("AppUser could not be found. The Baby was not saved.");
-            return Collections.emptyList();
-        }
-
-        if (appUser.get().getParent() == null) {
-            LOGGER.error("No Parent exist for this user. Baby could not be added.");
+            LOGGER.warn("User with baby was not found.");
             return Collections.emptyList();
         }
 
@@ -128,15 +119,10 @@ public class BabyService {
     }
 
     public GetBabyResponse getBaby(Long id, String token) {
-        Optional<AppUser> appUser = appUserService.findCurrentAppUser(token);
+        Optional<AppUser> appUser = isUserAndBabyPresent(token);
 
         if (appUser.isEmpty()) {
-            LOGGER.warn("AppUser could not be found. The Baby was not saved.");
-            return new GetBabyResponse();
-        }
-
-        if (appUser.get().getParent() == null) {
-            LOGGER.warn("No Parent exist for this user. Baby could not be added.");
+            LOGGER.warn("User with baby was not found.");
             return new GetBabyResponse();
         }
 
@@ -161,5 +147,53 @@ public class BabyService {
 
         LOGGER.warn("Baby with id {} was not found.", id);
         return new GetBabyResponse();
+    }
+
+    public GetBabyResponse updateBaby(UpdateBabyRequest updateBabyRequest, String token) {
+        Optional<AppUser> appUser = isUserAndBabyPresent(token);
+
+        if (appUser.isEmpty()) {
+            LOGGER.warn("User with baby was not found.");
+            return new GetBabyResponse();
+        }
+
+        Baby updateBaby = Baby.builder()
+                .name(updateBabyRequest.getName())
+                .dateOfBirth(updateBabyRequest.getDateOfBirth())
+                .sex(updateBabyRequest.getSex())
+                .weight(updateBabyRequest.getWeight())
+                .height(updateBabyRequest.getHeight())
+                .typeOfBirth(updateBabyRequest.getTypeOfBirth())
+                .birthWeight(updateBabyRequest.getBirthWeight())
+                .comments(updateBabyRequest.getComments())
+                .parent(appUser.get().getParent())
+                .build();
+
+        updateBaby = babyRepository.save(updateBaby);
+
+        return GetBabyResponse.builder()
+                .id(updateBaby.getId())
+                .name(updateBaby.getName())
+                .dateOfBirth(updateBaby.getDateOfBirth())
+                .age(updateBaby.getAge())
+                .sex(updateBaby.getSex())
+                .weight(updateBaby.getWeight())
+                .height(updateBaby.getHeight())
+                .typeOfBirth(updateBaby.getTypeOfBirth())
+                .birthWeight(updateBaby.getBirthWeight())
+                .comments(updateBaby.getComments())
+                .build();
+
+    }
+
+    private Optional<AppUser> isUserAndBabyPresent(String token) {
+        Optional<AppUser> appUser = appUserService.findCurrentAppUser(token);
+
+        if (appUser.isEmpty() || appUser.get().getParent() == null || appUser.get().getParent().getBabies() == null) {
+            LOGGER.warn("AppUser with existing babies could not be found.");
+            return Optional.empty();
+        } else {
+            return appUser;
+        }
     }
 }
