@@ -157,33 +157,40 @@ public class BabyService {
             return new GetBabyResponse();
         }
 
-        Baby updateBaby = Baby.builder()
-                .name(updateBabyRequest.getName())
-                .dateOfBirth(updateBabyRequest.getDateOfBirth())
-                .sex(updateBabyRequest.getSex())
-                .weight(updateBabyRequest.getWeight())
-                .height(updateBabyRequest.getHeight())
-                .typeOfBirth(updateBabyRequest.getTypeOfBirth())
-                .birthWeight(updateBabyRequest.getBirthWeight())
-                .comments(updateBabyRequest.getComments())
-                .parent(appUser.get().getParent())
-                .build();
+        // Assuming you have a method to get the existing Baby by some identifier (e.g., babyId from the request)
+        Optional<Baby> existingBabyOptional = babyRepository.findById(updateBabyRequest.getId());
 
-        updateBaby = babyRepository.save(updateBaby);
+        if (existingBabyOptional.isEmpty()) {
+            LOGGER.warn("Baby to update was not found.");
+            return new GetBabyResponse();
+        }
+
+        Baby existingBaby = existingBabyOptional.get();
+
+        existingBaby.setName(updateBabyRequest.getName());
+        existingBaby.setDateOfBirth(updateBabyRequest.getDateOfBirth());
+        existingBaby.setSex(updateBabyRequest.getSex());
+        existingBaby.setWeight(updateBabyRequest.getWeight());
+        existingBaby.setHeight(updateBabyRequest.getHeight());
+        existingBaby.setTypeOfBirth(updateBabyRequest.getTypeOfBirth());
+        existingBaby.setBirthWeight(updateBabyRequest.getBirthWeight());
+        existingBaby.setComments(updateBabyRequest.getComments());
+        existingBaby.setParent(appUser.get().getParent());
+
+        Baby updatedBaby = babyRepository.save(existingBaby);
 
         return GetBabyResponse.builder()
-                .id(updateBaby.getId())
-                .name(updateBaby.getName())
-                .dateOfBirth(updateBaby.getDateOfBirth())
-                .age(updateBaby.getAge())
-                .sex(updateBaby.getSex())
-                .weight(updateBaby.getWeight())
-                .height(updateBaby.getHeight())
-                .typeOfBirth(updateBaby.getTypeOfBirth())
-                .birthWeight(updateBaby.getBirthWeight())
-                .comments(updateBaby.getComments())
+                .id(updatedBaby.getId())
+                .name(updatedBaby.getName())
+                .dateOfBirth(updatedBaby.getDateOfBirth())
+                .age(updatedBaby.getAge())
+                .sex(updatedBaby.getSex())
+                .weight(updatedBaby.getWeight())
+                .height(updatedBaby.getHeight())
+                .typeOfBirth(updatedBaby.getTypeOfBirth())
+                .birthWeight(updatedBaby.getBirthWeight())
+                .comments(updatedBaby.getComments())
                 .build();
-
     }
 
     private Optional<AppUser> isUserAndBabyPresent(String token) {
