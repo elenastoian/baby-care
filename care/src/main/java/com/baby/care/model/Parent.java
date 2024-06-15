@@ -29,7 +29,6 @@ public class Parent {
 
     // age is not persisted in the database;
     // when is needed it will be accessed through its GETTER
-
     private int age;
 
     @Enumerated(EnumType.STRING)

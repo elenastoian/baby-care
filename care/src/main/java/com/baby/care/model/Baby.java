@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -53,6 +55,9 @@ public class Baby {
     @NonNull
     private Parent parent;
 
+    @OneToMany(mappedBy = "baby", cascade = CascadeType.ALL)
+    private List<BabyCareTracker> careTrackers = new ArrayList<>();
+
     @Transient
     public String getAge() {
         return calculateFormattedAge();
@@ -69,7 +74,7 @@ public class Baby {
 
         } catch (NullPointerException e) {
             Logger LOGGER = LoggerFactory.getLogger(Baby.class);
-            LOGGER.info("Baby age could not be calculated due to NullPointerException.");
+            LOGGER.error("Baby age could not be calculated due to NullPointerException.");
 
             return "";
         }
