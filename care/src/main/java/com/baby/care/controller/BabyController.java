@@ -3,6 +3,7 @@ package com.baby.care.controller;
 import com.baby.care.controller.repsonse.GetBabyResponse;
 import com.baby.care.controller.repsonse.SaveBabyResponse;
 import com.baby.care.controller.request.SaveBabyRequest;
+import com.baby.care.controller.request.UpdateBabyRequest;
 import com.baby.care.service.BabyService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -43,6 +44,16 @@ public class BabyController {
     public ResponseEntity<GetBabyResponse> getBaby(@PathVariable Long id, @RequestHeader("Authorization") String token) {
         try {
             GetBabyResponse response = babyService.getBaby(id, token);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new GetBabyResponse());
+        }
+    }
+
+    @PutMapping(path = "/update")
+    public ResponseEntity<GetBabyResponse> updateBaby(@RequestBody UpdateBabyRequest updateBabyRequest, @RequestHeader("Authorization") String token) {
+        try {
+            GetBabyResponse response = babyService.updateBaby(updateBabyRequest, token);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new GetBabyResponse());
