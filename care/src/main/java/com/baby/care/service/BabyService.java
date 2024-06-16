@@ -193,7 +193,7 @@ public class BabyService {
                 .build();
     }
 
-    private Optional<AppUser> isUserAndBabyPresent(String token) {
+    protected Optional<AppUser> isUserAndBabyPresent(String token) {
         Optional<AppUser> appUser = appUserService.findCurrentAppUser(token);
 
         if (appUser.isEmpty() || appUser.get().getParent() == null || appUser.get().getParent().getBabies() == null) {
