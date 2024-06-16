@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class FeedRecordResponse {
@@ -18,4 +17,11 @@ public class FeedRecordResponse {
     private TypeOfFood typeOfFood;
 
     private String comments;
+
+    public FeedRecordResponse(Long id, LocalDateTime feedTime, TypeOfFood typeOfFood, String comments) {
+        this.id = id;
+        this.feedTime = feedTime;
+        this.typeOfFood = typeOfFood;
+        this.comments = comments;
+    }
 }

@@ -22,7 +22,6 @@ public class FeedRecord {
     @Enumerated(EnumType.STRING)
     private TypeOfFood typeOfFood;
 
-    @Column(columnDefinition = "TEXT")
     private String comments;
 
     @ManyToOne

@@ -1,6 +1,7 @@
 package com.baby.care.service;
 
 import com.baby.care.controller.repsonse.BabyCareTrackerResponse;
+import com.baby.care.controller.repsonse.FeedRecordResponse;
 import com.baby.care.controller.repsonse.SleepRecordResponse;
 import com.baby.care.controller.repsonse.StoolRecordResponse;
 import com.baby.care.model.AppUser;
@@ -23,8 +24,17 @@ public class BabyCareTrackerService {
     private BabyCareTrackerRepository babyCareTrackerRepository;
     private BabyService babyService;
     private SleepRecordService sleepRecordService;
+    private StoolRecordService stoolRecordService;
+    private FeedRecordService feedRecordService;
 
 
+    /**
+     * Get all Care Tracker info including sleep + stool + feed records
+     *
+     * @param babyId
+     * @param token used for authentication purpose
+     * @return
+     */
     public BabyCareTrackerResponse getCareTracker(Long babyId, String token) {
        Optional<AppUser>  appUserOptional = babyService.isUserAndBabyPresent(token);
 
@@ -40,8 +50,8 @@ public class BabyCareTrackerService {
                    .id(babyCareTrackerOptional.get().getId())
                    .date(babyCareTrackerOptional.get().getDate())
                    .sleepRecords(getSleepRecordByBabyCareTrackerId(babyCareTrackerOptional.get().getId()))
-                   .stoolRecords(Collections.emptyList())
-                   .feedRecords(Collections.emptyList())
+                   .stoolRecords(getStoolRecordByBabyCareTrackerId(babyCareTrackerOptional.get().getId()))
+                   .feedRecords(getFeedRecordByBabyCareTrackerId(babyCareTrackerOptional.get().getId()))
                    .build();
        }
 
@@ -54,4 +64,15 @@ public class BabyCareTrackerService {
         return response.orElse(Collections.emptyList());
     }
 
+    private List<StoolRecordResponse> getStoolRecordByBabyCareTrackerId(Long babyCareTrackerId) {
+        Optional<List<StoolRecordResponse>> response = stoolRecordService.getStoolRecord(babyCareTrackerId);
+
+        return response.orElse(Collections.emptyList());
+    }
+
+    private List<FeedRecordResponse> getFeedRecordByBabyCareTrackerId(Long babyCareTrackerId) {
+        Optional<List<FeedRecordResponse>> response = feedRecordService.getFeedRecord(babyCareTrackerId);
+
+        return response.orElse(Collections.emptyList());
+    }
 }
