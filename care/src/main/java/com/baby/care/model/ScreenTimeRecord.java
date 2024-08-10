@@ -12,33 +12,30 @@ import java.time.LocalDateTime;
 @Builder
 @Setter
 @Getter
-public class SleepRecord {
+public class ScreenTimeRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private LocalDateTime creationDate;
 
-    private LocalDateTime sleepStart;
+    private LocalDateTime screenTimeStart;
 
-    private LocalDateTime sleepEnd;
+    private LocalDateTime screenTimeEnd;
 
-    private Duration sleepDuration;
+    private Duration screenTimeDuration;
+
+    @Column(columnDefinition = "TEXT")
+    private String comments;
 
     @ManyToOne
     @JoinColumn(name = "fk_baby_id", nullable = false)
     private Baby baby;
 
-    /**
-     * Calculates the duration of the sleep period.
-     * Do not persist the duration in database
-     *
-     * @return the duration of sleep as a Duration object.
-     */
     @Transient
-    public Duration getSleepDuration() {
-        if (sleepStart != null && sleepEnd != null) {
-            return Duration.between(sleepStart, sleepEnd);
+    public Duration getScreenTimeDuration() {
+        if (screenTimeStart != null && screenTimeEnd != null) {
+            return Duration.between(screenTimeStart, screenTimeEnd);
         } else {
             return Duration.ZERO;
         }

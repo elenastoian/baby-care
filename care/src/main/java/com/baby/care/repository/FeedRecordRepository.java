@@ -9,5 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface FeedRecordRepository extends JpaRepository<FeedRecord, Long> {
-    Optional<List<FeedRecord>> findByTrackerId(Long babyCareTrackerId);
+    List<FeedRecord> findAllByBabyIdOrderByFeedTimeDesc(Long babyId);
 }

@@ -1,10 +1,9 @@
 package com.baby.care.controller.repsonse;
 
+import jakarta.annotation.Nullable;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
@@ -16,9 +15,12 @@ public class BabyCareTrackerResponse {
 
     private LocalDate date;
 
-    private List<SleepRecordResponse> sleepRecords = new ArrayList<>();
+    @Nullable
+    private SleepRecordResponse sleepRecords ;
 
-    private List<StoolRecordResponse> stoolRecords = new ArrayList<>();
+    @Nullable
+    private ScreenTimeRecordResponse stoolRecords ;
 
-    private List<FeedRecordResponse> feedRecords = new ArrayList<>();
+    @Nullable
+    private FeedRecordResponse feedRecords ;
 }
