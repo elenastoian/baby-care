@@ -193,11 +193,26 @@ public class BabyService {
                 .build();
     }
 
+    /**
+     * Protected method to save baby
+     * Is used for other services, when a Baby needs to be assigned to a CareTracker or Parent
+     *
+     * @return the new Baby
+     */
+
+    protected Baby saveBaby(Baby baby) {
+        return babyRepository.save(baby);
+    }
+
+    protected Optional<Baby> findBabyById(Long babyId) {
+        return babyRepository.findById(babyId);
+    }
+
     protected Optional<AppUser> isUserAndBabyPresent(String token) {
         Optional<AppUser> appUser = appUserService.findCurrentAppUser(token);
 
         if (appUser.isEmpty() || appUser.get().getParent() == null || appUser.get().getParent().getBabies() == null) {
-            LOGGER.warn("AppUser with existing babies could not be found.");
+            LOGGER.warn("BabyService - AppUser with existing babies could not be found.");
             return Optional.empty();
         } else {
             return appUser;

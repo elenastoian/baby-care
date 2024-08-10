@@ -1,11 +1,14 @@
 package com.baby.care.service;
 
 import com.baby.care.controller.repsonse.FeedRecordResponse;
-import com.baby.care.controller.repsonse.StoolRecordResponse;
+import com.baby.care.controller.repsonse.ScreenTimeRecordResponse;
+import com.baby.care.model.AppUser;
 import com.baby.care.model.FeedRecord;
-import com.baby.care.model.StoolRecord;
+import com.baby.care.model.ScreenTimeRecord;
 import com.baby.care.repository.FeedRecordRepository;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -16,27 +19,28 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class FeedRecordService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(FeedRecordService.class);
+
     private FeedRecordRepository feedRecordRepository;
+    private final AppUserService appUserService;
 
-    protected Optional<List<FeedRecordResponse>> getFeedRecord(Long babyCareTrackerId) {
-        Optional<List<FeedRecord>> feedRecordOptional = feedRecordRepository.findByTrackerId(babyCareTrackerId);
+    public List<FeedRecordResponse> getAllFeedRecords(String token, Long babyId) {
+        Optional<AppUser> appUserOptional = appUserService.findCurrentAppUser(token);
 
-        if (feedRecordOptional.isPresent()) {
-            List<FeedRecordResponse> responseList = feedRecordOptional.map(feedRecords ->
-                            feedRecords.stream()
-                                    .map(feedRecord -> new FeedRecordResponse(
-                                            feedRecord.getId(),
-                                            feedRecord.getFeedTime(),
-                                            feedRecord.getTypeOfFood(),
-                                            feedRecord.getComments()
-                                    ))
-                                    .collect(Collectors.toList())
-                    )
-                    .orElse(Collections.emptyList());
-
-            return Optional.of(responseList);
+        if (appUserOptional.isEmpty()) {
+            LOGGER.info("FeedRecordService - AppUser not found.");
+            return Collections.emptyList();
         }
 
-        return Optional.of(Collections.emptyList());
+        List<FeedRecord> feedRecords = feedRecordRepository.findAllByBabyIdOrderByFeedTimeDesc(babyId);
+
+        return feedRecords.stream()
+                .map(record -> FeedRecordResponse.builder()
+                        .id(record.getId())
+                        .feedTime(record.getFeedTime())
+                        .typeOfFood(record.getTypeOfFood())
+                        .comments(record.getComments())
+                        .build())
+                .collect(Collectors.toList());
     }
 }

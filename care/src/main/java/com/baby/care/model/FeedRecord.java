@@ -17,6 +17,8 @@ public class FeedRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private LocalDateTime creationDate;
+
     private LocalDateTime feedTime;
 
     @Enumerated(EnumType.STRING)
@@ -25,6 +27,6 @@ public class FeedRecord {
     private String comments;
 
     @ManyToOne
-    @JoinColumn(name = "fk_tracker_id", nullable = false)
-    private BabyCareTracker tracker;
+    @JoinColumn(name = "fk_baby_id", nullable = false)
+    private Baby baby;
 }

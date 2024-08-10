@@ -56,7 +56,13 @@ public class Baby {
     private Parent parent;
 
     @OneToMany(mappedBy = "baby", cascade = CascadeType.ALL)
-    private List<BabyCareTracker> careTrackers = new ArrayList<>();
+    private List<SleepRecord> sleepRecords = new ArrayList<>();
+
+    @OneToMany(mappedBy = "baby", cascade = CascadeType.ALL)
+    private List<ScreenTimeRecord> screenTimeRecords = new ArrayList<>();
+
+    @OneToMany(mappedBy = "baby", cascade = CascadeType.ALL)
+    private List<FeedRecord> feedRecords = new ArrayList<>();
 
     @Transient
     public String getAge() {
