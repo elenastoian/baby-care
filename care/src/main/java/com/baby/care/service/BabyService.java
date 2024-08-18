@@ -157,7 +157,6 @@ public class BabyService {
             return new GetBabyResponse();
         }
 
-        // Assuming you have a method to get the existing Baby by some identifier (e.g., babyId from the request)
         Optional<Baby> existingBabyOptional = babyRepository.findById(updateBabyRequest.getId());
 
         if (existingBabyOptional.isEmpty()) {
