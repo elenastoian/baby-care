@@ -43,7 +43,7 @@ class FeedRecordServiceTest {
     }
 
     @Test
-    void getAllFeedRecordsSuccessfully() {
+    void testGetAllFeedRecordsSuccessfully() {
         FeedRecord feedRecord = new FeedRecord(1L, LocalDateTime.of(2024, Month.AUGUST, 20, 15, 00),
                 LocalDateTime.of(2024, Month.AUGUST, 20, 13, 00) , TypeOfFood.SOLID_FOOD, "N/A", new Baby());
         FeedRecord feedRecord2 = new FeedRecord(2L, LocalDateTime.of(2024, Month.AUGUST, 19, 19, 00),
@@ -63,7 +63,7 @@ class FeedRecordServiceTest {
     }
 
     @Test
-    void getAllFeedRecordsUnsuccessfully_AppUserNotFound() {
+    void testGetAllFeedRecordsUnsuccessfully_AppUserNotFound() {
 
         when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.empty());
 
@@ -76,7 +76,7 @@ class FeedRecordServiceTest {
     }
 
     @Test
-    void getAllFeedRecordsSuccessfully_NoRecordFound() {
+    void testGetAllFeedRecordsSuccessfully_NoRecordFound() {
         when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.of(appUser));
         when(feedRecordRepository.findAllByBabyIdOrderByFeedTimeDesc(anyLong())).thenReturn(Collections.emptyList());
 
