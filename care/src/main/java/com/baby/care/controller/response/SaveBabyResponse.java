@@ -1,4 +1,4 @@
-package com.baby.care.controller.repsonse;
+package com.baby.care.controller.response;
 
 import com.baby.care.model.enums.Sex;
 import com.baby.care.model.enums.TypeOfBirth;

@@ -1,7 +1,7 @@
 package com.baby.care.controller;
 
-import com.baby.care.controller.repsonse.GetBabyResponse;
-import com.baby.care.controller.repsonse.SaveBabyResponse;
+import com.baby.care.controller.response.GetBabyResponse;
+import com.baby.care.controller.response.SaveBabyResponse;
 import com.baby.care.controller.request.SaveBabyRequest;
 import com.baby.care.controller.request.UpdateBabyRequest;
 import com.baby.care.service.BabyService;

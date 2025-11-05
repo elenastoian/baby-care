@@ -1,21 +1,21 @@
 package com.baby.care.controller;
 
-import com.baby.care.controller.repsonse.GetParentResponse;
-import com.baby.care.controller.repsonse.SaveParentResponse;
+import com.baby.care.controller.response.GetParentResponse;
+import com.baby.care.controller.response.SaveParentResponse;
 import com.baby.care.controller.request.SaveParentRequest;
 import com.baby.care.controller.request.UpdateParentRequest;
 import com.baby.care.service.ParentService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path = "/parents")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ParentController {
 
-    private ParentService parentService;
+    private final ParentService parentService;
 
     @PostMapping
     public ResponseEntity<SaveParentResponse> saveParent(@RequestBody SaveParentRequest saveParentRequest, @RequestHeader("Authorization") String token) {

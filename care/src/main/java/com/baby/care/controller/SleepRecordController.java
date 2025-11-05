@@ -1,10 +1,10 @@
 package com.baby.care.controller;
 
-import com.baby.care.controller.repsonse.SleepRecordResponse;
+import com.baby.care.controller.response.SleepRecordResponse;
 import com.baby.care.controller.request.SaveBabyCareTrackerRequest;
 import com.baby.care.service.SleepRecordService;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,9 +13,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path = "/sleep")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class SleepRecordController {
-    private SleepRecordService sleepRecordService;
+    private final SleepRecordService sleepRecordService;
 
     @GetMapping(path = "/{babyId}/records")
     public ResponseEntity<List<SleepRecordResponse>> getAllSleepRecords(@RequestHeader("Authorization") String token, @PathVariable Long babyId) {

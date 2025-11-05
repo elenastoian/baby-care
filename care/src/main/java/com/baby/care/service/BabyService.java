@@ -1,12 +1,9 @@
 package com.baby.care.service;
 
-import com.baby.care.controller.repsonse.GetBabyResponse;
-import com.baby.care.controller.repsonse.SaveBabyResponse;
+import com.baby.care.controller.response.GetBabyResponse;
+import com.baby.care.controller.response.SaveBabyResponse;
 import com.baby.care.controller.request.SaveBabyRequest;
 import com.baby.care.controller.request.UpdateBabyRequest;
-import com.baby.care.errors.AppUserNotFoundException;
-import com.baby.care.errors.BabyNotFoundException;
-import com.baby.care.errors.FailedToSaveBabyException;
 import com.baby.care.model.AppUser;
 import com.baby.care.model.Baby;
 import com.baby.care.model.Parent;

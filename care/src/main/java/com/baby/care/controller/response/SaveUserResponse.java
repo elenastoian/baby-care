@@ -1,4 +1,4 @@
-package com.baby.care.controller.repsonse;
+package com.baby.care.controller.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

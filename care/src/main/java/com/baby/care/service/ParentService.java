@@ -1,12 +1,9 @@
 package com.baby.care.service;
 
-import com.baby.care.controller.repsonse.GetParentResponse;
-import com.baby.care.controller.repsonse.SaveBabyResponse;
-import com.baby.care.controller.repsonse.SaveParentResponse;
+import com.baby.care.controller.response.GetParentResponse;
+import com.baby.care.controller.response.SaveParentResponse;
 import com.baby.care.controller.request.SaveParentRequest;
 import com.baby.care.controller.request.UpdateParentRequest;
-import com.baby.care.errors.AppUserNotFoundException;
-import com.baby.care.errors.FailedToSaveParentException;
 import com.baby.care.errors.ParentNotFoundException;
 import com.baby.care.model.AppUser;
 import com.baby.care.model.Parent;
@@ -18,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
 

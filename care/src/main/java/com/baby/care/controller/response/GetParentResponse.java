@@ -1,4 +1,4 @@
-package com.baby.care.controller.repsonse;
+package com.baby.care.controller.response;
 
 import com.baby.care.model.enums.Sex;
 import lombok.*;
@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Builder
-public class SaveParentResponse {
+public class GetParentResponse {
     private Long id;
     private String name;
     private LocalDate dateOfBirth;

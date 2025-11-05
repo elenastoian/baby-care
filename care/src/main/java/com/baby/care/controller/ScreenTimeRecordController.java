@@ -1,8 +1,8 @@
 package com.baby.care.controller;
 
-import com.baby.care.controller.repsonse.ScreenTimeRecordResponse;
+import com.baby.care.controller.response.ScreenTimeRecordResponse;
 import com.baby.care.service.ScreenTimeService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,9 +11,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path = "/screen")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ScreenTimeRecordController {
-    private ScreenTimeService screenTimeService;
+    private final ScreenTimeService screenTimeService;
 
     @GetMapping(path = "/{babyId}/records")
     public ResponseEntity<List<ScreenTimeRecordResponse>> getScreenRecords(@RequestHeader("Authorization") String token, @PathVariable Long babyId) {

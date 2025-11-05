@@ -1,7 +1,7 @@
 package com.baby.care.service.security;
 
-import com.baby.care.controller.repsonse.AuthenticationResponse;
-import com.baby.care.controller.repsonse.TokenConfirmationResponse;
+import com.baby.care.controller.response.AuthenticationResponse;
+import com.baby.care.controller.response.TokenConfirmationResponse;
 import com.baby.care.controller.request.AuthenticationRequest;
 import com.baby.care.controller.request.RegisterRequest;
 import com.baby.care.model.AppUser;
@@ -10,8 +10,6 @@ import com.baby.care.model.Token;
 import com.baby.care.model.enums.TokenType;
 import com.baby.care.repository.AppUserRepository;
 import com.baby.care.repository.TokenRepository;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;

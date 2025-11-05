@@ -1,7 +1,7 @@
 package com.baby.care.service;
 
-import com.baby.care.controller.repsonse.GetParentResponse;
-import com.baby.care.controller.repsonse.SaveParentResponse;
+import com.baby.care.controller.response.GetParentResponse;
+import com.baby.care.controller.response.SaveParentResponse;
 import com.baby.care.controller.request.SaveParentRequest;
 import com.baby.care.controller.request.UpdateParentRequest;
 import com.baby.care.errors.ParentNotFoundException;

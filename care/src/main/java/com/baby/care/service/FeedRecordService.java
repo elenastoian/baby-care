@@ -1,6 +1,6 @@
 package com.baby.care.service;
 
-import com.baby.care.controller.repsonse.FeedRecordResponse;
+import com.baby.care.controller.response.FeedRecordResponse;
 import com.baby.care.model.AppUser;
 import com.baby.care.model.FeedRecord;
 import com.baby.care.repository.FeedRecordRepository;

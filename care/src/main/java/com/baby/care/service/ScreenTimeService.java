@@ -1,6 +1,6 @@
 package com.baby.care.service;
 
-import com.baby.care.controller.repsonse.ScreenTimeRecordResponse;
+import com.baby.care.controller.response.ScreenTimeRecordResponse;
 import com.baby.care.model.AppUser;
 import com.baby.care.model.ScreenTimeRecord;
 import com.baby.care.repository.ScreenTimeRecordRepository;

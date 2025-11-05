@@ -1,6 +1,6 @@
 package com.baby.care.controller;
 
-import com.baby.care.controller.repsonse.SaveUserResponse;
+import com.baby.care.controller.response.SaveUserResponse;
 import com.baby.care.controller.request.UpdateUserRequest;
 import com.baby.care.service.AppUserService;
 import lombok.AllArgsConstructor;
