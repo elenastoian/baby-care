@@ -12,7 +12,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Builder
 public class UpdateBabyRequest {
-    private Long id;
     private String name;
     private LocalDate dateOfBirth;
     private Sex sex;

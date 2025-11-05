@@ -17,7 +17,7 @@ import java.util.List;
 public class SleepRecordController {
     private SleepRecordService sleepRecordService;
 
-    @GetMapping(path = "/get-all/baby/{babyId}")
+    @GetMapping(path = "/{babyId}/records")
     public ResponseEntity<List<SleepRecordResponse>> getAllSleepRecords(@RequestHeader("Authorization") String token, @PathVariable Long babyId) {
         List<SleepRecordResponse> response = sleepRecordService.getAllSleepRecords(token, babyId);
 
@@ -28,7 +28,7 @@ public class SleepRecordController {
         }
     }
 
-    @PostMapping(path = "/save")
+    @PostMapping
     public ResponseEntity<SleepRecordResponse> saveSleepRecord(@RequestHeader("Authorization") String token,
                                                                @Valid @RequestBody SaveBabyCareTrackerRequest saveBabyCareTrackerRequest) {
 

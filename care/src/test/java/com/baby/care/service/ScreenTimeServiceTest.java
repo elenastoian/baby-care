@@ -65,7 +65,7 @@ class ScreenTimeServiceTest {
         when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.of(appUser));
         when(screenTimeRecordRepository.findAllByBabyIdOrderByScreenTimeStartDesc(anyLong())).thenReturn(screenTimeRecords);
 
-        List<ScreenTimeRecordResponse> responses = screenTimeService.getAllScreenTimeRecords("token", 1L);
+        List<ScreenTimeRecordResponse> responses = screenTimeService.getScreenRecords("token", 1L);
 
         assertEquals(2, responses.size());
         assertEquals(1L, responses.get(0).getId());
@@ -77,7 +77,7 @@ class ScreenTimeServiceTest {
     {
         when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.empty());
 
-        List<ScreenTimeRecordResponse> responses = screenTimeService.getAllScreenTimeRecords("token", 1L);
+        List<ScreenTimeRecordResponse> responses = screenTimeService.getScreenRecords("token", 1L);
 
         assertEquals(0, responses.size());
     }
@@ -88,7 +88,7 @@ class ScreenTimeServiceTest {
         when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.of(appUser));
         when(screenTimeRecordRepository.findAllByBabyIdOrderByScreenTimeStartDesc(anyLong())).thenReturn(Collections.emptyList());
 
-        List<ScreenTimeRecordResponse> responses = screenTimeService.getAllScreenTimeRecords("token", 1L);
+        List<ScreenTimeRecordResponse> responses = screenTimeService.getScreenRecords("token", 1L);
 
         assertEquals(0, responses.size());
     }

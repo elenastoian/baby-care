@@ -1,7 +1,6 @@
 package com.baby.care.service;
 
 import com.baby.care.controller.repsonse.ScreenTimeRecordResponse;
-import com.baby.care.controller.repsonse.SleepRecordResponse;
 import com.baby.care.model.AppUser;
 import com.baby.care.model.ScreenTimeRecord;
 import com.baby.care.repository.ScreenTimeRecordRepository;
@@ -24,7 +23,7 @@ public class ScreenTimeService {
     private final AppUserService appUserService;
     private final BabyService babyService;
 
-    public List<ScreenTimeRecordResponse> getAllScreenTimeRecords(String token, Long babyId) {
+    public List<ScreenTimeRecordResponse> getScreenRecords(String token, Long babyId) {
 
         Optional<AppUser> appUserOptional = appUserService.findCurrentAppUser(token);
 

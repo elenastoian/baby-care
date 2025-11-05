@@ -15,9 +15,9 @@ import java.util.List;
 public class ScreenTimeRecordController {
     private ScreenTimeService screenTimeService;
 
-    @GetMapping(path = "/get-all/baby/{babyId}")
-    public ResponseEntity<List<ScreenTimeRecordResponse>> getAllSleepRecords(@RequestHeader("Authorization") String token, @PathVariable Long babyId) {
-        List<ScreenTimeRecordResponse> response = screenTimeService.getAllScreenTimeRecords(token, babyId);
+    @GetMapping(path = "/{babyId}/records")
+    public ResponseEntity<List<ScreenTimeRecordResponse>> getScreenRecords(@RequestHeader("Authorization") String token, @PathVariable Long babyId) {
+        List<ScreenTimeRecordResponse> response = screenTimeService.getScreenRecords(token, babyId);
 
         if (!response.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(response);

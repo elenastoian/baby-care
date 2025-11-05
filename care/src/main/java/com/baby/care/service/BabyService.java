@@ -149,7 +149,7 @@ public class BabyService {
         return new GetBabyResponse();
     }
 
-    public GetBabyResponse updateBaby(UpdateBabyRequest updateBabyRequest, String token) {
+    public GetBabyResponse updateBaby(Long id, UpdateBabyRequest updateBabyRequest, String token) {
         Optional<AppUser> appUser = isUserAndBabyPresent(token);
 
         if (appUser.isEmpty()) {
@@ -157,7 +157,7 @@ public class BabyService {
             return new GetBabyResponse();
         }
 
-        Optional<Baby> existingBabyOptional = babyRepository.findById(updateBabyRequest.getId());
+        Optional<Baby> existingBabyOptional = babyRepository.findById(id);
 
         if (existingBabyOptional.isEmpty()) {
             LOGGER.warn("Baby to update was not found.");

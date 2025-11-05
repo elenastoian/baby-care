@@ -258,10 +258,10 @@ class BabyServiceTest {
         when(babyRepository.findById(anyLong())).thenReturn(Optional.of(baby));
         when(babyRepository.save(any(Baby.class))).thenReturn(baby);
 
-        UpdateBabyRequest updateBabyRequest = new UpdateBabyRequest(100L, "Rio the Dog", LocalDate.of(2021, Month.MARCH, 8),
+        UpdateBabyRequest updateBabyRequest = new UpdateBabyRequest("Rio the Dog", LocalDate.of(2021, Month.MARCH, 8),
                 Sex.MALE, 15.0, 50.0, TypeOfBirth.OTHER, 0.8, "update request");
 
-        GetBabyResponse response = babyService.updateBaby(updateBabyRequest, "token");
+        GetBabyResponse response = babyService.updateBaby(100L, updateBabyRequest, "token");
 
         verify(appUserService, times(1)).findCurrentAppUser("token");
         verify(babyRepository, times(1)).findById(100L);
@@ -275,7 +275,7 @@ class BabyServiceTest {
     void testUpdateBabyUnsuccessfully_AppUserNotFound() {
         when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.empty());
 
-        GetBabyResponse response = babyService.updateBaby(new UpdateBabyRequest(), "token");
+        GetBabyResponse response = babyService.updateBaby(100L, new UpdateBabyRequest(), "token");
 
         verify(appUserService, times(1)).findCurrentAppUser("token");
         verify(babyRepository, never()).findById(anyLong());
@@ -291,7 +291,7 @@ class BabyServiceTest {
 
         when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.of(appUser));
 
-        GetBabyResponse response = babyService.updateBaby(new UpdateBabyRequest(), "token");
+        GetBabyResponse response = babyService.updateBaby(100L, new UpdateBabyRequest(), "token");
 
         verify(appUserService, times(1)).findCurrentAppUser("token");
         verify(babyRepository, never()).findById(anyLong());
@@ -307,7 +307,7 @@ class BabyServiceTest {
 
         when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.of(appUser));
 
-        GetBabyResponse response = babyService.updateBaby(new UpdateBabyRequest(), "token");
+        GetBabyResponse response = babyService.updateBaby(100L, new UpdateBabyRequest(), "token");
 
         verify(appUserService, times(1)).findCurrentAppUser("token");
         verify(babyRepository, never()).findById(anyLong());
@@ -322,10 +322,10 @@ class BabyServiceTest {
         when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.of(appUser));
         when(babyRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        UpdateBabyRequest updateBabyRequest = new UpdateBabyRequest(5L, "Lila", LocalDate.of(2021, Month.JANUARY, 8),
+        UpdateBabyRequest updateBabyRequest = new UpdateBabyRequest("Lila", LocalDate.of(2021, Month.JANUARY, 8),
                 Sex.FEMALE, 15.0, 50.0, TypeOfBirth.OTHER, 0.8, "");
 
-        GetBabyResponse response = babyService.updateBaby(updateBabyRequest, "token");
+        GetBabyResponse response = babyService.updateBaby(5L, updateBabyRequest, "token");
 
         verify(appUserService, times(1)).findCurrentAppUser("token");
         verify(babyRepository, times(1)).findById(5L);

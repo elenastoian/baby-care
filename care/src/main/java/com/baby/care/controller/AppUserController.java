@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(path = "/user")
+@RequestMapping(path = "/users")
 public class AppUserController {
 
     private AppUserService appUserService;
 
-    @PutMapping(path = "/update")
+    @PutMapping(path = "/{id}")
     public ResponseEntity<SaveUserResponse> updateAppUser(@RequestBody UpdateUserRequest updateUserRequest, @RequestHeader("Authorization") String token) {
         try {
             SaveUserResponse response = appUserService.updateAppUser(updateUserRequest, token);

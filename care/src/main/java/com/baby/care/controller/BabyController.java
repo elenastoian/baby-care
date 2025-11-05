@@ -14,12 +14,12 @@ import java.util.Collections;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/baby")
+@RequestMapping(path = "/babies")
 @AllArgsConstructor
 public class BabyController {
     private BabyService babyService;
 
-    @PostMapping(path = "/save")
+    @PostMapping
     public ResponseEntity<SaveBabyResponse> saveBaby(@RequestBody SaveBabyRequest saveBabyRequest, @RequestHeader("Authorization") String token)
     {
         try {
@@ -30,7 +30,7 @@ public class BabyController {
         }
     }
 
-    @GetMapping(path = "/all")
+    @GetMapping
     public ResponseEntity<List<GetBabyResponse>> getAllBabies(@RequestHeader("Authorization") String token) {
         try {
             List<GetBabyResponse> response = babyService.getAllBabies(token);
@@ -50,10 +50,10 @@ public class BabyController {
         }
     }
 
-    @PutMapping(path = "/update")
-    public ResponseEntity<GetBabyResponse> updateBaby(@RequestBody UpdateBabyRequest updateBabyRequest, @RequestHeader("Authorization") String token) {
+    @PutMapping(path = "/{id}")
+    public ResponseEntity<GetBabyResponse> updateBaby(@PathVariable Long id, @RequestBody UpdateBabyRequest updateBabyRequest, @RequestHeader("Authorization") String token) {
         try {
-            GetBabyResponse response = babyService.updateBaby(updateBabyRequest, token);
+            GetBabyResponse response = babyService.updateBaby(id, updateBabyRequest, token);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new GetBabyResponse());

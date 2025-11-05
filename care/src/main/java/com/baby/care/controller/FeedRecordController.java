@@ -10,14 +10,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/feed")
+@RequestMapping(path = "/feeding")
 @AllArgsConstructor
 public class FeedRecordController {
 
     private FeedRecordService feedRecordService;
 
-    @GetMapping(path = "/get-all/baby/{babyId}")
-    public ResponseEntity<List<FeedRecordResponse>> getAllSleepRecords(@RequestHeader("Authorization") String token, @PathVariable Long babyId) {
+    @GetMapping(path = "/{babyId}/records")
+    public ResponseEntity<List<FeedRecordResponse>> getAllFeedRecords(@RequestHeader("Authorization") String token, @PathVariable Long babyId) {
         List<FeedRecordResponse> response = feedRecordService.getAllFeedRecords(token, babyId);
 
         if (!response.isEmpty()) {
