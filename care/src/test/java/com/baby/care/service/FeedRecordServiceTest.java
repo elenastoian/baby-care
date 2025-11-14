@@ -53,7 +53,7 @@ class FeedRecordServiceTest {
         when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.of(appUser));
         when(feedRecordRepository.findAllByBabyIdOrderByFeedTimeDesc(anyLong())).thenReturn(feedRecords);
 
-        List<FeedRecordResponse> result = feedRecordService.getAllFeedRecords("token", 1L);
+        List<FeedRecordResponse> result = feedRecordService.getAllFeedRecords( 1L);
 
         verify(appUserService, times(1)).findCurrentAppUser("token");
         verify(feedRecordRepository, times(1)).findAllByBabyIdOrderByFeedTimeDesc(1L);
@@ -66,7 +66,7 @@ class FeedRecordServiceTest {
 
         when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.empty());
 
-        List<FeedRecordResponse> result = feedRecordService.getAllFeedRecords("token", 1L);
+        List<FeedRecordResponse> result = feedRecordService.getAllFeedRecords( 1L);
 
         verify(appUserService, times(1)).findCurrentAppUser("token");
         verify(feedRecordRepository,never()).findAllByBabyIdOrderByFeedTimeDesc(1L);
@@ -79,7 +79,7 @@ class FeedRecordServiceTest {
         when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.of(appUser));
         when(feedRecordRepository.findAllByBabyIdOrderByFeedTimeDesc(anyLong())).thenReturn(Collections.emptyList());
 
-        List<FeedRecordResponse> result = feedRecordService.getAllFeedRecords("token", 1L);
+        List<FeedRecordResponse> result = feedRecordService.getAllFeedRecords(1L);
 
         verify(appUserService, times(1)).findCurrentAppUser("token");
         verify(feedRecordRepository, times(1)).findAllByBabyIdOrderByFeedTimeDesc(1L);

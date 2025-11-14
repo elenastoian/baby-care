@@ -4,7 +4,7 @@ import com.baby.care.controller.response.ScreenTimeRecordResponse;
 import com.baby.care.model.AppUser;
 import com.baby.care.model.ScreenTimeRecord;
 import com.baby.care.repository.ScreenTimeRecordRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -15,13 +15,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ScreenTimeService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ScreenTimeService.class);
 
     private final ScreenTimeRecordRepository screenTimeRecordRepository;
     private final AppUserService appUserService;
-    private final BabyService babyService;
 
     public List<ScreenTimeRecordResponse> getScreenRecords(String token, Long babyId) {
 

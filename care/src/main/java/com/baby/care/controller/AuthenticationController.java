@@ -5,16 +5,16 @@ import com.baby.care.controller.response.TokenConfirmationResponse;
 import com.baby.care.controller.request.AuthenticationRequest;
 import com.baby.care.controller.request.RegisterRequest;
 import com.baby.care.service.security.AuthenticationService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/auth")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AuthenticationController {
 
-    private AuthenticationService authenticationService;
+    private final AuthenticationService authenticationService;
 
     @PostMapping(value = "/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request){

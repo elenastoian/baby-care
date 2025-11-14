@@ -2,14 +2,14 @@ package com.baby.care.service.security;
 
 import com.baby.care.model.ConfirmationToken;
 import com.baby.care.repository.ConfirmationTokenRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ConfirmationTokenService {
 
     private final ConfirmationTokenRepository confirmationTokenRepository;

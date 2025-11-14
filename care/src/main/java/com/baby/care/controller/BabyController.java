@@ -6,6 +6,7 @@ import com.baby.care.controller.request.SaveBabyRequest;
 import com.baby.care.controller.request.UpdateBabyRequest;
 import com.baby.care.service.BabyService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +16,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path = "/babies")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class BabyController {
-    private BabyService babyService;
+    private final BabyService babyService;
 
     @PostMapping
     public ResponseEntity<SaveBabyResponse> saveBaby(@RequestBody SaveBabyRequest saveBabyRequest, @RequestHeader("Authorization") String token)

@@ -3,22 +3,22 @@ package com.baby.care.controller;
 import com.baby.care.controller.response.SaveUserResponse;
 import com.baby.care.controller.request.UpdateUserRequest;
 import com.baby.care.service.AppUserService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping(path = "/users")
 public class AppUserController {
 
-    private AppUserService appUserService;
+    private final AppUserService appUserService;
 
     @PutMapping(path = "/{id}")
-    public ResponseEntity<SaveUserResponse> updateAppUser(@RequestBody UpdateUserRequest updateUserRequest, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<SaveUserResponse> updateAppUser(@RequestBody UpdateUserRequest updateUserRequest) {
         try {
-            SaveUserResponse response = appUserService.updateAppUser(updateUserRequest, token);
+            SaveUserResponse response = appUserService.updateAppUser(updateUserRequest);
             return ResponseEntity.status(HttpStatus.OK).body(response);
 
         } catch (Exception e) {

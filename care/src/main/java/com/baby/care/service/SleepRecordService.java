@@ -6,7 +6,7 @@ import com.baby.care.model.AppUser;
 import com.baby.care.model.Baby;
 import com.baby.care.model.SleepRecord;
 import com.baby.care.repository.SleepRecordRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class SleepRecordService {
     private static final Logger LOGGER = LoggerFactory.getLogger(SleepRecordService.class);
 

@@ -11,6 +11,7 @@ import com.baby.care.repository.BabyRepository;
 import com.baby.care.repository.ParentRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,13 +19,13 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class BabyService {
     private static final Logger LOGGER = LoggerFactory.getLogger(BabyService.class);
 
-    private BabyRepository babyRepository;
-    private AppUserService appUserService;
-    private ParentRepository parentRepository;
+    private final BabyRepository babyRepository;
+    private final AppUserService appUserService;
+    private final ParentRepository parentRepository;
 
     /**
      * Save a new Baby and assign it to its Parent

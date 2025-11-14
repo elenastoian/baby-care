@@ -5,30 +5,28 @@ import com.baby.care.model.AppUser;
 import com.baby.care.model.FeedRecord;
 import com.baby.care.repository.FeedRecordRepository;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class FeedRecordService {
     private static final Logger LOGGER = LoggerFactory.getLogger(FeedRecordService.class);
 
-    private FeedRecordRepository feedRecordRepository;
-    private final AppUserService appUserService;
+    private final FeedRecordRepository feedRecordRepository;
 
-    public List<FeedRecordResponse> getAllFeedRecords(String token, Long babyId) {
-        Optional<AppUser> appUserOptional = appUserService.findCurrentAppUser(token);
+    public List<FeedRecordResponse> getAllFeedRecords(Long babyId) {
+        AppUser appUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        if (appUserOptional.isEmpty()) {
-            LOGGER.info("FeedRecordService - AppUser not found.");
-            return Collections.emptyList();
-        }
+        LOGGER.info("Authenticated user: {}", appUser.getEmail());
 
         List<FeedRecord> feedRecords = feedRecordRepository.findAllByBabyIdOrderByFeedTimeDesc(babyId);
 
@@ -41,4 +39,7 @@ public class FeedRecordService {
                         .build())
                 .collect(Collectors.toList());
     }
+
+
+
 }
