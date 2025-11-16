@@ -17,7 +17,7 @@ public class AppUserController {
     private final AppUserService appUserService;
 
     @PutMapping(path = "/{id}")
-    public ResponseEntity<SaveUserResponse> updateAppUser(@Valid @RequestBody UpdateUserRequest updateUserRequest) {
+    public ResponseEntity<SaveUserResponse> updateAppUser(@RequestBody @Valid UpdateUserRequest updateUserRequest) {
         try {
             SaveUserResponse response = appUserService.updateAppUser(updateUserRequest);
             return ResponseEntity.status(HttpStatus.OK).body(response);
