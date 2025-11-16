@@ -18,6 +18,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -43,7 +45,6 @@ class BabyServiceTest {
     private  AppUser appUser = new AppUser();
     private Parent parent = new Parent();;
     private  Baby baby = new Baby();
-
 
     @BeforeEach
     void setAppUserWithParentWithBaby() {
@@ -82,16 +83,18 @@ class BabyServiceTest {
                 .parent(parent)
                 .build();
 
-        when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.of(appUser));
         when(babyRepository.save(any(Baby.class))).thenReturn(baby);
         when(parentRepository.save(any(Parent.class))).thenReturn(parent);
+
+        // Set SecurityContext principal
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(appUser, null));
 
         SaveBabyRequest request = new SaveBabyRequest("Rio", LocalDate.of(2021, Month.MARCH, 8),
                 Sex.MALE, 15.0, 50.3, TypeOfBirth.OTHER, 0.8, "N/A");
 
-        SaveBabyResponse response = babyService.saveBaby(request, "token");
+        SaveBabyResponse response = babyService.saveBaby(request);
 
-        verify(appUserService, times(1)).findCurrentAppUser("token");
+        // appUserService is no longer called - remove verify
         verify(babyRepository, times(1)).save(any(Baby.class));
         verify(parentRepository, times(1)).save(any(Parent.class));
 
@@ -101,9 +104,10 @@ class BabyServiceTest {
     @Test
     void testBabyNotSaved_AppUserNotFound()
     {
-        when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.empty());
+        // No authentication set in SecurityContext -> service should return empty response
+        SecurityContextHolder.clearContext();
 
-        SaveBabyResponse response = babyService.saveBaby(new SaveBabyRequest(), "token");
+        SaveBabyResponse response = babyService.saveBaby(new SaveBabyRequest());
 
         assertNull(response.getId());
     }
@@ -113,9 +117,9 @@ class BabyServiceTest {
     {
         appUser.setParent(null);
 
-        when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.of(appUser));
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(appUser, null));
 
-        SaveBabyResponse response = babyService.saveBaby(new SaveBabyRequest(), "token");
+        SaveBabyResponse response = babyService.saveBaby(new SaveBabyRequest());
 
         assertNotNull(response);
         assertNull(response.getId());
@@ -123,9 +127,9 @@ class BabyServiceTest {
 
     @Test
     void testGetAllBabiesSuccessfully() {
-        when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.of(appUser));
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(appUser, null));
 
-        List<GetBabyResponse> babyResponseList = babyService.getAllBabies("token");
+        List<GetBabyResponse> babyResponseList = babyService.getAllBabies();
 
         assertEquals(1, babyResponseList.size());
         assertEquals("Rio", babyResponseList.get(0).getName());
@@ -144,11 +148,9 @@ class BabyServiceTest {
 
         parent.setBabies(List.of(baby, baby1));
 
-        when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.of(appUser));
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(appUser, null));
 
-        List<GetBabyResponse> babyResponseList = babyService.getAllBabies("token");
-
-        verify(appUserService, times(1)).findCurrentAppUser(anyString());
+        List<GetBabyResponse> babyResponseList = babyService.getAllBabies();
 
         assertEquals(2, babyResponseList.size());
         assertEquals("Rio", babyResponseList.get(0).getName());
@@ -157,11 +159,10 @@ class BabyServiceTest {
 
     @Test
     void testGetAllBabiesUnsuccessfully_AppUserNotFound() {
-        when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.empty());
+        SecurityContextHolder.clearContext();
 
-        List<GetBabyResponse> babyResponseList = babyService.getAllBabies("token");
+        List<GetBabyResponse> babyResponseList = babyService.getAllBabies();
 
-        verify(appUserService, times(1)).findCurrentAppUser(anyString());
         assertEquals(0, babyResponseList.size());
     }
 
@@ -169,22 +170,20 @@ class BabyServiceTest {
     void testGetAllBabiesUnsuccessfully_ParentNotFound() {
         appUser.setParent(null);
 
-        when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.of(appUser));
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(appUser, null));
 
-        List<GetBabyResponse> babyResponseList = babyService.getAllBabies("token");
+        List<GetBabyResponse> babyResponseList = babyService.getAllBabies();
 
-        verify(appUserService, times(1)).findCurrentAppUser(anyString());
         assertEquals(0, babyResponseList.size());
     }
 
     @Test
     void testGetBabySuccessfully() {
-        when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.of(appUser));
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(appUser, null));
         when(babyRepository.findById(anyLong())).thenReturn(Optional.of(baby));
 
-        GetBabyResponse response = babyService.getBaby(100L, "token");
+        GetBabyResponse response = babyService.getBaby(100L);
 
-        verify(appUserService, times(1)).findCurrentAppUser("token");
         verify(babyRepository, times(1)).findById(100L);
 
         assertEquals(100L, response.getId());
@@ -193,11 +192,10 @@ class BabyServiceTest {
 
     @Test
     void testGetBabyUnsuccessfully_AppUserNotFound() {
-        when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.empty());
+        SecurityContextHolder.clearContext();
 
-        GetBabyResponse response = babyService.getBaby(100L, "token");
+        GetBabyResponse response = babyService.getBaby(100L);
 
-        verify(appUserService, times(1)).findCurrentAppUser("token");
         verify(babyRepository, never()).findById(100L);
 
         assertNotNull(response);
@@ -207,11 +205,10 @@ class BabyServiceTest {
     @Test
     void testGetBabyUnsuccessfully_ParentNotFound() {
         appUser.setParent(null);
-        when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.of(appUser));
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(appUser, null));
 
-        GetBabyResponse response = babyService.getBaby(100L, "token");
+        GetBabyResponse response = babyService.getBaby(100L);
 
-        verify(appUserService, times(1)).findCurrentAppUser("token");
         verify(babyRepository, never()).findById(100L);
 
         assertNotNull(response);
@@ -221,11 +218,10 @@ class BabyServiceTest {
     @Test
     void testGetBabyUnsuccessfully_ParentWithoutBabies() {
         parent.setBabies(null);
-        when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.of(appUser));
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(appUser, null));
 
-        GetBabyResponse response = babyService.getBaby(100L, "token");
+        GetBabyResponse response = babyService.getBaby(100L);
 
-        verify(appUserService, times(1)).findCurrentAppUser("token");
         verify(babyRepository, never()).findById(100L); // never called because Parent has 0 Babies
 
         assertNotNull(response);
@@ -235,12 +231,11 @@ class BabyServiceTest {
 
     @Test
     void testGetBabyUnsuccessfully_BabyNotFound() {
-        when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.of(appUser));
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(appUser, null));
         when(babyRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        GetBabyResponse response = babyService.getBaby(5L, "token");
+        GetBabyResponse response = babyService.getBaby(5L);
 
-        verify(appUserService, times(1)).findCurrentAppUser("token");
         verify(babyRepository, times(1)).findById(5L);
 
         assertNotNull(response);
@@ -250,16 +245,15 @@ class BabyServiceTest {
 
     @Test
     void testUpdateBabySuccessfully() {
-        when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.of(appUser));
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(appUser, null));
         when(babyRepository.findById(anyLong())).thenReturn(Optional.of(baby));
         when(babyRepository.save(any(Baby.class))).thenReturn(baby);
 
         UpdateBabyRequest updateBabyRequest = new UpdateBabyRequest("Rio the Dog", LocalDate.of(2021, Month.MARCH, 8),
                 Sex.MALE, 15.0, 50.0, TypeOfBirth.OTHER, 0.8, "update request");
 
-        GetBabyResponse response = babyService.updateBaby(100L, updateBabyRequest, "token");
+        GetBabyResponse response = babyService.updateBaby(100L, updateBabyRequest);
 
-        verify(appUserService, times(1)).findCurrentAppUser("token");
         verify(babyRepository, times(1)).findById(100L);
         verify(babyRepository, times(1)).save(baby);
 
@@ -269,11 +263,10 @@ class BabyServiceTest {
 
     @Test
     void testUpdateBabyUnsuccessfully_AppUserNotFound() {
-        when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.empty());
+        SecurityContextHolder.clearContext();
 
-        GetBabyResponse response = babyService.updateBaby(100L, new UpdateBabyRequest(), "token");
+        GetBabyResponse response = babyService.updateBaby(100L, new UpdateBabyRequest());
 
-        verify(appUserService, times(1)).findCurrentAppUser("token");
         verify(babyRepository, never()).findById(anyLong());
         verify(babyRepository, never()).save(any(Baby.class));
 
@@ -285,11 +278,10 @@ class BabyServiceTest {
     void testUpdateBabyUnsuccessfully_ParentNotFound() {
         appUser.setParent(null);
 
-        when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.of(appUser));
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(appUser, null));
 
-        GetBabyResponse response = babyService.updateBaby(100L, new UpdateBabyRequest(), "token");
+        GetBabyResponse response = babyService.updateBaby(100L, new UpdateBabyRequest());
 
-        verify(appUserService, times(1)).findCurrentAppUser("token");
         verify(babyRepository, never()).findById(anyLong());
         verify(babyRepository, never()).save(any(Baby.class));
 
@@ -301,11 +293,10 @@ class BabyServiceTest {
     void testUpdateBabyUnsuccessfully_ParentWithoutBabies() {
         parent.setBabies(null);
 
-        when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.of(appUser));
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(appUser, null));
 
-        GetBabyResponse response = babyService.updateBaby(100L, new UpdateBabyRequest(), "token");
+        GetBabyResponse response = babyService.updateBaby(100L, new UpdateBabyRequest());
 
-        verify(appUserService, times(1)).findCurrentAppUser("token");
         verify(babyRepository, never()).findById(anyLong());
         verify(babyRepository, never()).save(any(Baby.class));
 
@@ -315,15 +306,14 @@ class BabyServiceTest {
 
     @Test
     void testUpdateBabyUnsuccessfully_BabyNotFound() {
-        when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.of(appUser));
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(appUser, null));
         when(babyRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         UpdateBabyRequest updateBabyRequest = new UpdateBabyRequest("Lila", LocalDate.of(2021, Month.JANUARY, 8),
                 Sex.FEMALE, 15.0, 50.0, TypeOfBirth.OTHER, 0.8, "");
 
-        GetBabyResponse response = babyService.updateBaby(5L, updateBabyRequest, "token");
+        GetBabyResponse response = babyService.updateBaby(5L, updateBabyRequest);
 
-        verify(appUserService, times(1)).findCurrentAppUser("token");
         verify(babyRepository, times(1)).findById(5L);
         verify(babyRepository, never()).save(any(Baby.class));
 

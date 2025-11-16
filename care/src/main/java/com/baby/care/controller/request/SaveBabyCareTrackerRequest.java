@@ -1,7 +1,7 @@
 package com.baby.care.controller.request;
 
+import com.baby.care.model.ScreenTimeRecord;
 import jakarta.annotation.Nullable;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -24,7 +24,7 @@ public class SaveBabyCareTrackerRequest {
     private SleepRecordRequest sleepRecord;
 
     @Nullable
-    private StoolRecordRequest stoolRecord;
+    private ScreenTimeRecord screenTimeRecord;
 
     @Nullable
     private FeedRecordRequest feedRecord;

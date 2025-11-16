@@ -18,8 +18,8 @@ public class SleepRecordController {
     private final SleepRecordService sleepRecordService;
 
     @GetMapping(path = "/{babyId}/records")
-    public ResponseEntity<List<SleepRecordResponse>> getAllSleepRecords(@RequestHeader("Authorization") String token, @PathVariable Long babyId) {
-        List<SleepRecordResponse> response = sleepRecordService.getAllSleepRecords(token, babyId);
+    public ResponseEntity<List<SleepRecordResponse>> getAllSleepRecords(@PathVariable Long babyId) {
+        List<SleepRecordResponse> response = sleepRecordService.getAllSleepRecords(babyId);
 
         if (!response.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -29,10 +29,9 @@ public class SleepRecordController {
     }
 
     @PostMapping
-    public ResponseEntity<SleepRecordResponse> saveSleepRecord(@RequestHeader("Authorization") String token,
-                                                               @Valid @RequestBody SaveBabyCareTrackerRequest saveBabyCareTrackerRequest) {
+    public ResponseEntity<SleepRecordResponse> saveSleepRecord(@Valid @RequestBody SaveBabyCareTrackerRequest saveBabyCareTrackerRequest) {
 
-        SleepRecordResponse response = sleepRecordService.saveSleepRecord(token, saveBabyCareTrackerRequest);
+        SleepRecordResponse response = sleepRecordService.saveSleepRecord(saveBabyCareTrackerRequest);
 
         if (response.getId() != null && response.getId() > 0) {
             return ResponseEntity.status(HttpStatus.CREATED).body(response);

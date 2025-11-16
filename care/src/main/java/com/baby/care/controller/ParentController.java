@@ -18,9 +18,9 @@ public class ParentController {
     private final ParentService parentService;
 
     @PostMapping
-    public ResponseEntity<SaveParentResponse> saveParent(@RequestBody SaveParentRequest saveParentRequest, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<SaveParentResponse> saveParent(@RequestBody SaveParentRequest saveParentRequest) {
         try {
-            SaveParentResponse response = parentService.saveParent(saveParentRequest, token);
+            SaveParentResponse response = parentService.saveParent(saveParentRequest);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
         } catch (Exception e) {
@@ -29,9 +29,9 @@ public class ParentController {
     }
 
     @GetMapping()
-    public ResponseEntity<GetParentResponse> getParent(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<GetParentResponse> getParent() {
         try {
-            GetParentResponse response = parentService.getParent(token);
+            GetParentResponse response = parentService.getParent();
             return ResponseEntity.status(HttpStatus.OK).body(response);
 
         }  catch (Exception e) {
@@ -40,9 +40,9 @@ public class ParentController {
     }
 
     @PutMapping(path = "/update")
-    public ResponseEntity<SaveParentResponse> updateParent(@RequestBody UpdateParentRequest updateParentRequest, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<SaveParentResponse> updateParent(@RequestBody UpdateParentRequest updateParentRequest) {
         try {
-            SaveParentResponse response = parentService.updateParent(updateParentRequest, token);
+            SaveParentResponse response = parentService.updateParent(updateParentRequest);
             return ResponseEntity.status(HttpStatus.OK).body(response);
 
         } catch (Exception e) {

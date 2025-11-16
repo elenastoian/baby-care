@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -29,32 +30,22 @@ public class ParentService {
     private final AppUserRepository appUserRepository;
 
     /**
-     * Saves a new Parent object and assign it to an AppUser based on  2 criteria:
-     * 1. Login token has to be valid and assigned to an AppUser
-     * 2. AppUser need to not have a Parent assigned
-     *
-     * @param saveParentRequest information about Parent
-     * @param token login token
-     * @return the information that were saved about Parent
+     * Save a new Parent for the currently authenticated AppUser.
+     * If the AppUser already has a Parent, return the existing Parent.
      */
     @Transactional
-    public SaveParentResponse saveParent(SaveParentRequest saveParentRequest, String token) {
-        Optional<AppUser> appUser = appUserService.findCurrentAppUser(token);
+    public SaveParentResponse saveParent(SaveParentRequest saveParentRequest) {
+        AppUser appUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        if (appUser.isEmpty()) {
-            LOGGER.warn("AppUser could not be found. The Parent was not saved.");
-            return new SaveParentResponse();
-        }
-
-        if (appUser.get().getParent() != null) {
+        if (appUser.getParent() != null) {
             LOGGER.warn("Parent for this user already exists.");
             return SaveParentResponse.builder()
-                    .id(appUser.get().getParent().getId())
-                    .name(appUser.get().getParent().getName())
-                    .dateOfBirth(appUser.get().getParent().getDateOfBirth())
-                    .age(appUser.get().getParent().getAge())
-                    .sex(appUser.get().getParent().getSex())
-                    .location(appUser.get().getParent().getLocation())
+                    .id(appUser.getParent().getId())
+                    .name(appUser.getParent().getName())
+                    .dateOfBirth(appUser.getParent().getDateOfBirth())
+                    .age(appUser.getParent().getAge())
+                    .sex(appUser.getParent().getSex())
+                    .location(appUser.getParent().getLocation())
                     .build();
         }
 
@@ -64,12 +55,12 @@ public class ParentService {
                     .dateOfBirth(saveParentRequest.getDateOfBirth())
                     .sex(saveParentRequest.getSex())
                     .location(saveParentRequest.getLocation())
-                    .appUser(appUser.get())
+                    .appUser(appUser)
                     .build();
-            appUser.get().setParent(parent);
+            appUser.setParent(parent);
 
             parent = parentRepository.save(parent);
-            appUserRepository.save(appUser.get());
+            appUserRepository.save(appUser);
 
             return SaveParentResponse.builder()
                     .id(parent.getId())
@@ -86,21 +77,15 @@ public class ParentService {
         }
     }
 
-    public GetParentResponse getParent(String token) {
+    public GetParentResponse getParent() {
         try {
-            Optional<AppUser> appUser = isUserAndParentPresent(token);
+            AppUser appUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-            //CHECK USER
-            if (appUser.isEmpty()) {
-                LOGGER.info("User not found.");
-                return new GetParentResponse();
-            }
-
-            Optional<Parent> parent = parentRepository.findById(appUser.get().getParent().getId());
+            Optional<Parent> parent = parentRepository.findById(appUser.getParent().getId());
 
             //CHECK PARENT
             if (parent.isEmpty()) {
-                LOGGER.info("Parent not found for user with id {}.", appUser.get().getId());
+                LOGGER.info("Parent not found for user with id {}.", appUser.getId());
                 return new GetParentResponse();
             }
 
@@ -114,25 +99,24 @@ public class ParentService {
             response.setAge(parent.get().getAge());
             return response;
         } catch(Exception e) {
-            LOGGER.error(e.getMessage());
-            LOGGER.error(Arrays.toString(e.getStackTrace()));
+            LOGGER.error("Parent not found for this user.");
             throw new ParentNotFoundException();
         }
     }
 
     @Transactional
-    public SaveParentResponse updateParent(UpdateParentRequest updateParentRequest, String token) {
-        Optional<AppUser> appUser = isUserAndParentPresent(token);
+    public SaveParentResponse updateParent(UpdateParentRequest updateParentRequest) {
+        AppUser appUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        if (appUser.isPresent()) {
-            Parent parent = appUser.get().getParent();
+        if (appUser.getParent() != null) {
+            Parent parent = appUser.getParent();
 
             parent.setName(updateParentRequest.getName());
             parent.setDateOfBirth(updateParentRequest.getDateOfBirth());
             parent.setSex(updateParentRequest.getSex());
             parent.setLocation(updateParentRequest.getLocation());
 
-            LOGGER.warn("Parent will be updated.");
+            LOGGER.info("Parent will be updated.");
             parentRepository.save(parent);
 
             return SaveParentResponse.builder()
@@ -146,18 +130,5 @@ public class ParentService {
         } else {
             return new SaveParentResponse();
         }
-    }
-
-    private Optional<AppUser> isUserAndParentPresent(String token) {
-        Optional<AppUser> optionalAppUser = appUserService.findCurrentAppUser(token);
-
-        if(optionalAppUser.isPresent()){
-            if(optionalAppUser.get().getParent() != null){
-                return optionalAppUser;
-            }
-        }
-
-        LOGGER.warn("ParentService - Parent was not found.");
-        return Optional.empty();
     }
 }

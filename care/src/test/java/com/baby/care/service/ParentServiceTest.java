@@ -67,7 +67,7 @@ class ParentServiceTest {
         when(appUserRepository.save(any(AppUser.class))).thenReturn(appUser);
 
         SaveParentRequest request = new SaveParentRequest("Name", LocalDate.of(2023, Month.OCTOBER, 12), Sex.FEMALE, "Romania");
-        parentService.saveParent(request, "token");
+        parentService.saveParent(request);
 
         verify(appUserService, times(1)).findCurrentAppUser(anyString());
         verify(parentRepository, times(1)).save(any(Parent.class));
@@ -84,7 +84,7 @@ class ParentServiceTest {
 
         SaveParentRequest request = new SaveParentRequest("Name", LocalDate.of(2023, Month.OCTOBER, 12), Sex.FEMALE, "Romania");
 
-        SaveParentResponse result = parentService.saveParent(request, "token");
+        SaveParentResponse result = parentService.saveParent(request);
 
         assertNull(result.getId());
 
@@ -96,7 +96,7 @@ class ParentServiceTest {
 
         SaveParentRequest request = new SaveParentRequest("Name", LocalDate.of(2023, Month.OCTOBER, 12), Sex.FEMALE, "Romania");
 
-        SaveParentResponse result = parentService.saveParent(request, "token");
+        SaveParentResponse result = parentService.saveParent(request);
 
         //assert
         assertEquals(100L, result.getId());
@@ -112,7 +112,7 @@ class ParentServiceTest {
 
         SaveParentRequest request = new SaveParentRequest("Name", LocalDate.of(2023, Month.OCTOBER, 12), Sex.FEMALE, "Romania");
 
-        SaveParentResponse result = parentService.saveParent(request, "token");
+        SaveParentResponse result = parentService.saveParent(request);
 
         assertNull(result.getId());
     }
@@ -122,7 +122,7 @@ class ParentServiceTest {
         when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.of(appUser));
         when(parentRepository.findById(anyLong())).thenReturn(Optional.of(parent));
 
-        GetParentResponse result = parentService.getParent("token");
+        GetParentResponse result = parentService.getParent();
 
         assertNotNull(result);
         assertEquals(100L, result.getId());
@@ -133,7 +133,7 @@ class ParentServiceTest {
     void testGetParentUnsuccessful_AppUserNotFound() {
         when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.empty());
 
-        GetParentResponse result = parentService.getParent("token");
+        GetParentResponse result = parentService.getParent();
 
         assertNotNull(result);
         assertNull(result.getId());
@@ -144,7 +144,7 @@ class ParentServiceTest {
         when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.of(appUser));
         when(parentRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        GetParentResponse result = parentService.getParent("token");
+        GetParentResponse result = parentService.getParent();
 
         assertNotNull(result);
         assertNull(result.getId());
@@ -154,7 +154,7 @@ class ParentServiceTest {
     void testGetParentThrowsError() {
         when(appUserService.findCurrentAppUser(anyString())).thenThrow(new RuntimeException("Simulated exception"));
 
-        assertThrows(ParentNotFoundException.class,  () -> parentService.getParent("token"));
+        assertThrows(ParentNotFoundException.class,  () -> parentService.getParent());
     }
 
     @Test
@@ -168,7 +168,7 @@ class ParentServiceTest {
         when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.of(appUser));
         when( parentRepository.save(parent)).thenReturn(parent);
 
-        parentService.updateParent(updateParentRequest, "token");
+        parentService.updateParent(updateParentRequest);
 
         assertEquals("Update name", parent.getName());
         assertEquals(Sex.MALE, parent.getSex());
@@ -179,7 +179,7 @@ class ParentServiceTest {
     void testUpdateParentUnsuccessfully_AppUserNotFound() {
         when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.empty());
 
-        SaveParentResponse response = parentService.updateParent(new UpdateParentRequest(), "token");
+        SaveParentResponse response = parentService.updateParent(new UpdateParentRequest());
 
         assertNull(response.getId());
     }
@@ -190,7 +190,7 @@ class ParentServiceTest {
 
         when(appUserService.findCurrentAppUser(anyString())).thenReturn(Optional.of(appUser));
 
-        SaveParentResponse response = parentService.updateParent(new UpdateParentRequest(), "token");
+        SaveParentResponse response = parentService.updateParent(new UpdateParentRequest());
 
         assertNull(response.getId());
     }

@@ -55,6 +55,9 @@ public class AppUserService implements UserDetailsService {
         }
     }
 
+    /**
+     * Update the current authenticated AppUser's email and/or password.
+     */
     @Transactional
     public SaveUserResponse updateAppUser(UpdateUserRequest updateUserRequest) {
         AppUser appUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

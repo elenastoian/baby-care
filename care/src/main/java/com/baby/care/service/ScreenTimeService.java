@@ -22,15 +22,7 @@ public class ScreenTimeService {
     private final ScreenTimeRecordRepository screenTimeRecordRepository;
     private final AppUserService appUserService;
 
-    public List<ScreenTimeRecordResponse> getScreenRecords(String token, Long babyId) {
-
-        Optional<AppUser> appUserOptional = appUserService.findCurrentAppUser(token);
-
-        if (appUserOptional.isEmpty()) {
-            LOGGER.info("ScreenTimeService - AppUser not found.");
-            return Collections.emptyList();
-        }
-
+    public List<ScreenTimeRecordResponse> getScreenRecords(Long babyId) {
         List<ScreenTimeRecord> screenTimeRecords = screenTimeRecordRepository.findAllByBabyIdOrderByScreenTimeStartDesc(babyId);
 
         return screenTimeRecords.stream()

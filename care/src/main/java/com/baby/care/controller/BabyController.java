@@ -21,10 +21,10 @@ public class BabyController {
     private final BabyService babyService;
 
     @PostMapping
-    public ResponseEntity<SaveBabyResponse> saveBaby(@RequestBody SaveBabyRequest saveBabyRequest, @RequestHeader("Authorization") String token)
+    public ResponseEntity<SaveBabyResponse> saveBaby(@RequestBody SaveBabyRequest saveBabyRequest)
     {
         try {
-            SaveBabyResponse response = babyService.saveBaby(saveBabyRequest, token);
+            SaveBabyResponse response = babyService.saveBaby(saveBabyRequest);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new SaveBabyResponse());
@@ -32,9 +32,9 @@ public class BabyController {
     }
 
     @GetMapping
-    public ResponseEntity<List<GetBabyResponse>> getAllBabies(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<List<GetBabyResponse>> getAllBabies() {
         try {
-            List<GetBabyResponse> response = babyService.getAllBabies(token);
+            List<GetBabyResponse> response = babyService.getAllBabies();
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.emptyList());
@@ -42,9 +42,9 @@ public class BabyController {
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<GetBabyResponse> getBaby(@PathVariable Long id, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<GetBabyResponse> getBaby(@PathVariable Long id) {
         try {
-            GetBabyResponse response = babyService.getBaby(id, token);
+            GetBabyResponse response = babyService.getBaby(id);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new GetBabyResponse());
@@ -52,9 +52,9 @@ public class BabyController {
     }
 
     @PutMapping(path = "/{id}")
-    public ResponseEntity<GetBabyResponse> updateBaby(@PathVariable Long id, @RequestBody UpdateBabyRequest updateBabyRequest, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<GetBabyResponse> updateBaby(@PathVariable Long id, @RequestBody UpdateBabyRequest updateBabyRequest) {
         try {
-            GetBabyResponse response = babyService.updateBaby(id, updateBabyRequest, token);
+            GetBabyResponse response = babyService.updateBaby(id, updateBabyRequest);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new GetBabyResponse());

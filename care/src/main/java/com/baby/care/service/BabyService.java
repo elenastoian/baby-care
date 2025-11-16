@@ -10,10 +10,11 @@ import com.baby.care.model.Parent;
 import com.baby.care.repository.BabyRepository;
 import com.baby.care.repository.ParentRepository;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -24,26 +25,15 @@ public class BabyService {
     private static final Logger LOGGER = LoggerFactory.getLogger(BabyService.class);
 
     private final BabyRepository babyRepository;
-    private final AppUserService appUserService;
     private final ParentRepository parentRepository;
 
-    /**
-     * Save a new Baby and assign it to its Parent
-     *
-     * @param saveBabyRequest contains information about Baby
-     * @param token is used to find the current AppUser and Parent
-     * @return information that were saved in the database
-     */
     @Transactional
-    public SaveBabyResponse saveBaby(SaveBabyRequest saveBabyRequest, String token) {
-        Optional<AppUser> appUser = isUserAndBabyPresent(token);
-
-        if (appUser.isEmpty()) {
-            LOGGER.warn("User with baby was not found.");
-            return new SaveBabyResponse();
-        }
+    public SaveBabyResponse saveBaby(SaveBabyRequest saveBabyRequest) {
+        AppUser appUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         try {
+            Parent parent = appUser.getParent();
+
             Baby baby = Baby.builder()
                     .name(saveBabyRequest.getName())
                     .dateOfBirth(saveBabyRequest.getDateOfBirth())
@@ -53,18 +43,15 @@ public class BabyService {
                     .typeOfBirth(saveBabyRequest.getTypeOfBirth())
                     .birthWeight(saveBabyRequest.getBirthWeight())
                     .comments(saveBabyRequest.getComments())
-                    .parent(appUser.get().getParent())
+                    .parent(parent)
                     .build();
 
-            baby = babyRepository.save(baby);
+            Baby savedBaby = babyRepository.save(baby);
+            LOGGER.info("Saved baby with id {}.", savedBaby.getId());
 
-            LOGGER.info("Baby was saved.");
-
-            Parent parent = appUser.get().getParent();
-            parent.getBabies().add(baby);
+            parent.getBabies().add(savedBaby);
             parentRepository.save(parent);
-
-            LOGGER.info("Baby was added to Parent and saved.");
+            LOGGER.info("Added baby {} to parent id {}.", savedBaby.getId(), parent.getId());
 
             return SaveBabyResponse.builder()
                     .id(baby.getId())
@@ -86,29 +73,13 @@ public class BabyService {
         }
     }
 
-    public List<GetBabyResponse> getAllBabies(String token) {
-        Optional<AppUser> appUser = isUserAndBabyPresent(token);
-
-        if (appUser.isEmpty()) {
-            LOGGER.warn("User with baby was not found.");
-            return Collections.emptyList();
-        }
+    public List<GetBabyResponse> getAllBabies() {
+        AppUser appUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         List<GetBabyResponse> responseList = new ArrayList<>();
 
-        for(Baby baby : appUser.get().getParent().getBabies()) {
-            GetBabyResponse response = GetBabyResponse.builder()
-                    .id(baby.getId())
-                    .name(baby.getName())
-                    .dateOfBirth(baby.getDateOfBirth())
-                    .age(baby.getAge())
-                    .sex(baby.getSex())
-                    .weight(baby.getWeight())
-                    .height(baby.getHeight())
-                    .typeOfBirth(baby.getTypeOfBirth())
-                    .birthWeight(baby.getBirthWeight())
-                    .comments(baby.getComments())
-                    .build();
+        for (Baby baby : appUser.getParent().getBabies()) {
+            GetBabyResponse response = mapToResponse(baby);
 
             responseList.add(response);
         }
@@ -116,103 +87,83 @@ public class BabyService {
         return responseList;
     }
 
-    public GetBabyResponse getBaby(Long id, String token) {
-        Optional<AppUser> appUser = isUserAndBabyPresent(token);
-
-        if (appUser.isEmpty()) {
-            LOGGER.warn("User with baby was not found.");
-            return new GetBabyResponse();
-        }
-
+    public GetBabyResponse getBaby(Long id) {
         Optional<Baby> baby = babyRepository.findById(id);
 
         if (baby.isPresent()) {
             LOGGER.info("Baby with id {} was found.", id);
 
-            return GetBabyResponse.builder()
-                    .id(baby.get().getId())
-                    .name(baby.get().getName())
-                    .dateOfBirth(baby.get().getDateOfBirth())
-                    .age(baby.get().getAge())
-                    .sex(baby.get().getSex())
-                    .weight(baby.get().getWeight())
-                    .height(baby.get().getHeight())
-                    .typeOfBirth(baby.get().getTypeOfBirth())
-                    .birthWeight(baby.get().getBirthWeight())
-                    .comments(baby.get().getComments())
-                    .build();
+            return mapToResponse(baby.get());
         }
 
         LOGGER.warn("Baby with id {} was not found.", id);
         return new GetBabyResponse();
     }
 
-    public GetBabyResponse updateBaby(Long id, UpdateBabyRequest updateBabyRequest, String token) {
-        Optional<AppUser> appUser = isUserAndBabyPresent(token);
+    @Transactional
+    public GetBabyResponse updateBaby(Long id, UpdateBabyRequest request) {
+        Baby existingBaby = findBabyById(id);
 
-        if (appUser.isEmpty()) {
-            LOGGER.warn("User with baby was not found.");
-            return new GetBabyResponse();
-        }
+        updateBabyFields(existingBaby, request);
+        Baby updated = this.saveBaby(existingBaby);
 
-        Optional<Baby> existingBabyOptional = babyRepository.findById(id);
-
-        if (existingBabyOptional.isEmpty()) {
-            LOGGER.warn("Baby to update was not found.");
-            return new GetBabyResponse();
-        }
-
-        Baby existingBaby = existingBabyOptional.get();
-
-        existingBaby.setName(updateBabyRequest.getName());
-        existingBaby.setDateOfBirth(updateBabyRequest.getDateOfBirth());
-        existingBaby.setSex(updateBabyRequest.getSex());
-        existingBaby.setWeight(updateBabyRequest.getWeight());
-        existingBaby.setHeight(updateBabyRequest.getHeight());
-        existingBaby.setTypeOfBirth(updateBabyRequest.getTypeOfBirth());
-        existingBaby.setBirthWeight(updateBabyRequest.getBirthWeight());
-        existingBaby.setComments(updateBabyRequest.getComments());
-        existingBaby.setParent(appUser.get().getParent());
-
-        Baby updatedBaby = babyRepository.save(existingBaby);
-
-        return GetBabyResponse.builder()
-                .id(updatedBaby.getId())
-                .name(updatedBaby.getName())
-                .dateOfBirth(updatedBaby.getDateOfBirth())
-                .age(updatedBaby.getAge())
-                .sex(updatedBaby.getSex())
-                .weight(updatedBaby.getWeight())
-                .height(updatedBaby.getHeight())
-                .typeOfBirth(updatedBaby.getTypeOfBirth())
-                .birthWeight(updatedBaby.getBirthWeight())
-                .comments(updatedBaby.getComments())
-                .build();
+        return mapToResponse(updated);
     }
-
-    /**
-     * Protected method to save baby
-     * Is used for other services, when a Baby needs to be assigned to a CareTracker or Parent
-     *
-     * @return the new Baby
-     */
 
     protected Baby saveBaby(Baby baby) {
         return babyRepository.save(baby);
     }
 
-    protected Optional<Baby> findBabyById(Long babyId) {
-        return babyRepository.findById(babyId);
+    protected Optional<AppUser> getAppUserWithBaby() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            LOGGER.warn("No authenticated user found.");
+            return Optional.empty();
+        }
+
+        Object principal = authentication.getPrincipal();
+        if (!(principal instanceof AppUser appUser)) {
+            LOGGER.warn("Principal is not an AppUser instance.");
+            return Optional.empty();
+        }
+
+        if (appUser.getParent() == null || appUser.getParent().getBabies() == null) {
+            LOGGER.warn("AppUser has no parent or no babies.");
+            return Optional.empty();
+        }
+
+        return Optional.of(appUser);
     }
 
-    protected Optional<AppUser> isUserAndBabyPresent(String token) {
-        Optional<AppUser> appUser = appUserService.findCurrentAppUser(token);
+    protected Baby findBabyById(Long id) {
+        return babyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Baby not found"));
+    }
 
-        if (appUser.isEmpty() || appUser.get().getParent() == null || appUser.get().getParent().getBabies() == null) {
-            LOGGER.warn("BabyService - AppUser with existing babies could not be found.");
-            return Optional.empty();
-        } else {
-            return appUser;
-        }
+    private void updateBabyFields(Baby baby, UpdateBabyRequest request) {
+        baby.setName(request.getName());
+        baby.setDateOfBirth(request.getDateOfBirth());
+        baby.setSex(request.getSex());
+        baby.setWeight(request.getWeight());
+        baby.setHeight(request.getHeight());
+        baby.setTypeOfBirth(request.getTypeOfBirth());
+        baby.setBirthWeight(request.getBirthWeight());
+        baby.setComments(request.getComments());
+    }
+
+    private GetBabyResponse mapToResponse(Baby baby) {
+        return GetBabyResponse.builder()
+                .id(baby.getId())
+                .name(baby.getName())
+                .dateOfBirth(baby.getDateOfBirth())
+                .age(baby.getAge())
+                .sex(baby.getSex())
+                .weight(baby.getWeight())
+                .height(baby.getHeight())
+                .typeOfBirth(baby.getTypeOfBirth())
+                .birthWeight(baby.getBirthWeight())
+                .comments(baby.getComments())
+                .build();
     }
 }

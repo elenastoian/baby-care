@@ -16,8 +16,8 @@ public class ScreenTimeRecordController {
     private final ScreenTimeService screenTimeService;
 
     @GetMapping(path = "/{babyId}/records")
-    public ResponseEntity<List<ScreenTimeRecordResponse>> getScreenRecords(@RequestHeader("Authorization") String token, @PathVariable Long babyId) {
-        List<ScreenTimeRecordResponse> response = screenTimeService.getScreenRecords(token, babyId);
+    public ResponseEntity<List<ScreenTimeRecordResponse>> getScreenRecords(@PathVariable Long babyId) {
+        List<ScreenTimeRecordResponse> response = screenTimeService.getScreenRecords(babyId);
 
         if (!response.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(response);

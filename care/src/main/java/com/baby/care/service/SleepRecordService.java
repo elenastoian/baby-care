@@ -26,14 +26,7 @@ public class SleepRecordService {
     private final AppUserService appUserService;
     private final BabyService babyService;
 
-    public List<SleepRecordResponse> getAllSleepRecords(String token, Long babyId) {
-        Optional<AppUser> appUserOptional = appUserService.findCurrentAppUser(token);
-
-        if (appUserOptional.isEmpty()) {
-            LOGGER.info("SleepRecordService - AppUser not found.");
-            return Collections.emptyList();
-        }
-
+    public List<SleepRecordResponse> getAllSleepRecords(Long babyId) {
         List<SleepRecord> sleepRecords = sleepRecordRepository.findAllByBabyIdOrderBySleepStartDesc(babyId);
 
         return sleepRecords.stream()
@@ -47,33 +40,17 @@ public class SleepRecordService {
     }
 
     @Transactional
-    public SleepRecordResponse saveSleepRecord(String token, SaveBabyCareTrackerRequest saveBabyCareTrackerRequest) {
-        // Find the current user
-        Optional<AppUser> optionalAppUser = appUserService.findCurrentAppUser(token);
-        if (optionalAppUser.isEmpty()) {
-            LOGGER.info("SleepRecordService - User not found for token: {}", token);
-            return new SleepRecordResponse(); // Return an empty response
-        }
-
-        // Find the baby associated with the request
-        Optional<Baby> optionalBaby = babyService.findBabyById(saveBabyCareTrackerRequest.getBabyId());
-        if (optionalBaby.isEmpty()) {
-            LOGGER.info("SleepRecordService - Baby not found with id: {}", saveBabyCareTrackerRequest.getBabyId());
-            return new SleepRecordResponse(); // Return an empty response
-        }
-
-        Baby baby = optionalBaby.get();
-
-
-        // Build and save the SleepRecord
+    public SleepRecordResponse saveSleepRecord(SaveBabyCareTrackerRequest saveBabyCareTrackerRequest) {
+        Baby baby = babyService.findBabyById(saveBabyCareTrackerRequest.getBabyId());
+        assert saveBabyCareTrackerRequest.getSleepRecord() != null;
         SleepRecord sleepRecord = SleepRecord.builder()
+                .baby(baby)
                 .sleepStart(saveBabyCareTrackerRequest.getSleepRecord().getSleepStart())
                 .sleepEnd(saveBabyCareTrackerRequest.getSleepRecord().getSleepEnd())
                 .build();
 
         sleepRecord = sleepRecordRepository.save(sleepRecord);
 
-        // Return a response object with the saved SleepRecord details
         return SleepRecordResponse.builder()
                 .id(sleepRecord.getId())
                 .sleepDuration(sleepRecord.getSleepDuration())
